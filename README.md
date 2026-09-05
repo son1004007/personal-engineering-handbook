@@ -1,12 +1,13 @@
 # Personal Engineering Handbook
 
-> Status: **independently reviewed draft / owner approval pending**  
+> Status: **independently reviewed baseline + approved mandatory review policy**  
 > Baseline date: **2026-09-06**  
-> Final independent review: **AGY/Gemini READY_FOR_REVIEWED, BLOCKER 0**
+> Mandatory review policy: **approved by owner 2026-09-06**  
+> Prior final independent baseline review: **AGY/Gemini READY_FOR_REVIEWED, BLOCKER 0**
 
 개인적으로 사용하는 소프트웨어 엔지니어링 원칙, SDLC 기준, 개발 표준, 검토 체크리스트를 공개 가능한 형태로 정리하는 저장소입니다.
 
-이 저장소의 목적은 단순한 `coding style` 모음이 아닙니다.
+이 저장소의 목적은 단순한 `coding style` 모음이 아닙니다. **개인 프로젝트뿐 아니라 회사·고객 프로젝트에서 내가 수행하는 작업 방식의 기본 골격으로 사용하되, 법률·계약·회사·고객·프로젝트 정책을 항상 우선합니다.**
 
 ```text
 문제 정의
@@ -15,19 +16,33 @@
 -> 설계 / architecture
 -> 구현
 -> verification / testing
--> review / security review
+-> mandatory independent review
+-> finding reconciliation
 -> validation / acceptance
 -> release
 -> operation / retrospective
 ```
 
-실제 적용 시에는 [`OPERATING_MODEL.md`](OPERATING_MODEL.md)의 **Solo/Team mode + LOW/MEDIUM/HIGH risk tier**를 먼저 사용합니다. 모든 변경에 동일한 문서·리뷰·테스트를 강제하지 않습니다.
+## Mandatory review — approved
+
+가장 먼저 [`REVIEW_POLICY.md`](REVIEW_POLICY.md)를 읽습니다.
+
+현재 owner-approved 기본값:
+
+- substantive code/config/schema/API/infra/security/deployment behavior change는 **AGY/Gemini independent final review MUST**
+- MEDIUM/HIGH architecture/security/data/operation decision은 **구현 전 AGY/Gemini design review MUST**
+- AGY/Gemini finding은 자동 정답이 아니라 `ACCEPTED / MODIFIED / REJECTED / DEFERRED`로 evidence-based reconciliation MUST
+- 회사/고객 policy가 외부 AGY에 정보 제공을 금지하면 data를 반출하지 않고 `AGY_NOT_PERMITTED_BY_POLICY`를 기록한 뒤 프로젝트가 승인한 독립 reviewer로 대체
+- break-glass containment는 review를 지연할 수 있지만 없애지는 못함
+
+즉 **문서량은 risk-based, 독립 review는 mandatory**입니다.
 
 ## Current baseline
 
-### Operating model
+### Operating / review model
 
-- [`OPERATING_MODEL.md`](OPERATING_MODEL.md) — BCP14 vocabulary, Solo/Team, risk tier, inference boundary, break-glass, anti-overengineering
+- [`REVIEW_POLICY.md`](REVIEW_POLICY.md) — **approved v1.0**, mandatory AGY/Gemini independent review + reconciliation
+- [`OPERATING_MODEL.md`](OPERATING_MODEL.md) — BCP14 vocabulary, Solo/Team, LOW/MEDIUM/HIGH risk tier, inference boundary, break-glass, anti-overengineering
 
 ### Lifecycle
 
@@ -57,8 +72,6 @@
 
 ## Authority
 
-이 저장소의 규칙은 개인 기본값 후보입니다. 다음 우선순위를 절대 넘지 않습니다.
-
 ```text
 사용자의 현재 명시적 지시
 > 법률 / 계약 / 고객 요구사항
@@ -81,36 +94,33 @@
 - 고객사명, 내부 IP/URL, 계정, schema/table 이름, 실제 운영 데이터와 비공개 architecture를 포함하지 않습니다.
 - 예시는 synthetic domain / synthetic data로 독립 작성합니다.
 - 이 저장소는 현재 또는 과거 고용주, 고객사의 공식 정책이 아닙니다.
+- 회사 프로젝트 review를 위해 AGY를 사용할 때도 **회사/고객의 AI 사용·데이터 반출 정책을 우회하지 않습니다.**
 
 자세한 내용은 [`PUBLICATION_POLICY.md`](PUBLICATION_POLICY.md)를 따릅니다.
 
 ## Rule status
 
-각 규칙은 다음 상태를 사용합니다.
-
-- `draft`: 초안. 다른 프로젝트에 기본 규칙으로 강제하지 않음
+- `draft`: 초안
 - `independently-reviewed draft` / `reviewed`: 독립 검토를 받았지만 owner 최종 승인 전
-- `approved`: 개인 기본 engineering rule로 사용 가능
-- `deprecated`: 더 이상 신규 작업에 적용하지 않음
-- `superseded`: 새로운 문서가 대체함
+- `approved`: owner가 개인 기본 engineering rule로 명시적으로 채택
+- `deprecated`: 신규 작업에 적용하지 않음
+- `superseded`: 새로운 문서가 대체
 
-**2026-09-06 baseline은 AGY/Gemini 독립 리뷰에서 `READY_FOR_REVIEWED` 판정을 받았지만 아직 owner-approved로 승격하지 않았습니다.**
+현재 **mandatory review policy는 approved**, 나머지 2026-09-06 baseline은 독립 검토를 받은 상태에서 계속 세부 검증·승인을 진행합니다.
 
 ## Review principle
 
-AI의 합의만으로 규칙을 승인하지 않습니다.
-
 ```text
-법률/계약/프로젝트 정책
+법률/계약/회사·프로젝트 정책
 > 실제 test / runtime evidence
 > current official standard / official vendor documentation
+> 프로젝트 요구/architecture evidence
 > 신뢰 가능한 engineering practice
-> 독립 human review
-> 복수 AI의 독립 검토
-> 단일 AI 의견
+> AGY/Gemini 및 기타 독립 review
+> implementation agent의 자체 주장
 ```
 
-AI finding은 공식 문서와 실제 환경으로 교차검증하고 `accepted / modified / rejected`를 기록합니다.
+AGY/Gemini review는 **항상 수행하는 독립 검토 gate**지만, finding 내용은 공식 문서와 실제 환경으로 교차검증해 `accepted / modified / rejected / deferred`를 기록합니다.
 
 ## References
 
@@ -142,4 +152,4 @@ Cross-repository AI 작업은 다음 전역 control을 먼저 따릅니다.
 
 `son1004007/ai-agent-workflow-playbook/CONTROL.md`
 
-이 handbook은 **engineering practice의 Source of Truth 후보/approved baseline**이고, global control은 **AI workflow / repository routing의 Source of Truth**입니다.
+이 handbook은 **engineering practice와 mandatory review policy의 Source of Truth**이고, global control은 **AI workflow / repository routing의 Source of Truth**입니다.
