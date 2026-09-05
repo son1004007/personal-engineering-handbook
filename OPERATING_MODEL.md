@@ -1,9 +1,9 @@
 # Operating Model
 
-- status: `draft`
-- version: `0.2`
+- status: `independently-reviewed draft`
+- version: `0.3`
 - baseline_date: `2026-09-06`
-- review_input: `AGY/Gemini issue #350`
+- review_inputs: `AGY/Gemini issues #350, #352`
 
 이 문서는 handbook 규칙을 실제 작업에 적용할 때 필요한 공통 해석 기준을 정의한다. 개인 handbook이 불필요한 절차 장벽이 되지 않도록 **운영 모드, 위험 등급, 규범 키워드, inference 경계와 긴급 변경 경로**를 명시한다.
 
@@ -28,9 +28,23 @@ Official references:
 개인 프로젝트, 독립 작업 또는 본인이 최종 책임자인 작업.
 
 - 작성자 본인이 최종 승인할 수 있다.
-- 중간 위험 변경은 가능하면 **독립 AI review, fresh-eyes self-review, deterministic verification** 중 하나 이상을 사용한다.
-- high-risk 변경은 가능한 경우 독립 reviewer를 추가하고, 사람 reviewer가 없으면 그 사실과 residual risk를 기록한다.
-- 독립 reviewer 부재만으로 low/medium-risk 개인 작업을 영구 차단하지 않는다.
+- MEDIUM 변경은 deterministic verification을 기본으로 하고, ambiguity가 높으면 독립 AI review 또는 fresh-eyes self-review를 추가한다.
+- HIGH 변경은 가능한 경우 implementation context와 분리된 independent reviewer를 추가한다.
+- 독립 human reviewer가 없더라도 개인 작업을 무기한 차단하지 않지만, HIGH-risk self-approval은 아래 최소 evidence bundle을 충족해야 한다.
+
+#### HIGH-risk solo self-approval minimum evidence — MUST
+
+해당 위험에 직접 관련된 항목만 선택하되 최소한 다음 범주를 모두 다룬다.
+
+1. **Risk statement** — 무엇이 잘못될 수 있고 blast radius가 무엇인지 명시
+2. **Deterministic verification** — 핵심 위험을 직접 검증하는 test/static check/runtime probe 중 적절한 evidence
+3. **Failure/recovery evidence** — destructive/migration/state change라면 rollback, restore, disable 또는 forward-fix 가능성을 실제 가능한 수준에서 확인
+4. **Independent semantic review** — 가능한 경우 분리된 AI/model/context 또는 다른 reviewer로 second opinion; 불가능하면 그 사실과 fresh-eyes self-review 결과를 기록
+5. **Residual risk / decision** — 검증하지 못한 범위와 왜 진행 가능한지 명시
+
+모든 HIGH-risk 변경에 동일한 negative-test suite나 migration dry-run을 기계적으로 요구하지 않는다. **위험 유형에 직접 대응하는 evidence**가 핵심이다.
+
+회사·고객 정책이 human separation-of-duties를 요구하면 이 solo fallback을 사용할 수 없다.
 
 ### Team / organization mode
 
@@ -74,7 +88,7 @@ Official references:
 - Verification evidence
 - 필요한 rollback note
 
-`SRC-###`, `FR/SEC/DATA/...` ID는 traceability가 실제 가치를 줄 때만 사용한다. medium이라는 이유만으로 모든 ID를 강제하지 않는다.
+`SRC-###`, `FR/SEC/DATA/...` ID는 traceability가 실제 가치를 줄 때만 사용한다. MEDIUM이라는 이유만으로 모든 ID를 강제하지 않는다.
 
 ### HIGH — architectural / security / irreversible / wide blast radius
 
@@ -93,7 +107,7 @@ Official references:
 - architecture/security/data decision
 - threat/risk review
 - migration/rollback 또는 forward-fix 전략
-- 독립 review
+- risk-appropriate independent review
 - acceptance/release evidence
 
 ## 4. `Important`의 기본 판정
@@ -177,6 +191,7 @@ TRIAGE
 - 모든 테스트 레벨 생성
 - 모든 개인 작업에 외부 human reviewer 대기
 - 모든 endpoint에 별도 계층/interface/factory 생성
+- HIGH-risk라는 이유만으로 위험과 무관한 모든 검증 도구를 실행
 
 handbook의 목적은 **판단 품질과 증거 품질을 높이는 것**이지 산출물 개수를 늘리는 것이 아니다.
 
@@ -184,4 +199,5 @@ handbook의 목적은 **판단 품질과 증거 품질을 높이는 것**이지 
 
 - 2026-09-06: ChatGPT initial operating model.
 - 2026-09-06: AGY/Gemini #350 findings incorporated selectively: solo/team mode, risk-tier simplification, inference boundary, break-glass path, BCP14 vocabulary, VERIFY/REVIEW/VALIDATE separation.
-- Rejected/modified AGY suggestion: fixed 24–48 hour incident backfill deadline was not adopted because it lacks a universal policy basis.
+- 2026-09-06: Fixed 24–48 hour incident backfill suggestion rejected because it lacks a universal policy basis.
+- 2026-09-06: Final AGY/Gemini #352 verdict `READY_FOR_REVIEWED`, no BLOCKER. Added explicit HIGH-risk solo fallback evidence bundle without mandating irrelevant test types.
