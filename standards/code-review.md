@@ -1,14 +1,15 @@
 # Code Review Standard
 
 - status: `draft`
-- version: `0.2`
+- version: `0.3`
 - baseline_date: `2026-09-06`
 - primary_practice_reference: `Google Engineering Practices`
 - operating_model: [`../OPERATING_MODEL.md`](../OPERATING_MODEL.md)
+- mandatory_review_policy: [`../REVIEW_POLICY.md`](../REVIEW_POLICY.md) `approved v1.0`
 
 ## 목적
 
-코드 리뷰는 style lint의 반복이 아니라 변경이 시스템에 들어가도 되는지 의미 수준에서 판단하는 quality gate다. Solo/AI-pair와 Team mode의 승인 책임은 Operating Model과 실제 프로젝트 policy를 따른다.
+코드 리뷰는 style lint의 반복이 아니라 변경이 시스템에 들어가도 되는지 의미 수준에서 판단하는 quality gate다. **Substantive engineering change는 AGY/Gemini independent review를 반드시 거치며**, AGY finding은 증거에 따라 reconciliation한 뒤 최종 severity를 확정한다.
 
 ## 리뷰 순서
 
@@ -70,9 +71,32 @@ PR 본문에 `PASS`라고 적혀 있어도 가능한 경우 CI/test/runtime evid
 
 README/Javadoc/comment/ADR가 실제 코드와 충돌하면 구현을 무조건 정답으로 간주하지 않는다. 의도된 계약을 요구사항·테스트·결정 기록으로 확인한다.
 
+## CR-008 — AGY/Gemini independent review를 생략하지 않는다 — MUST
+
+[`../REVIEW_POLICY.md`](../REVIEW_POLICY.md)에 해당하는 substantive change는 final merge/release 전에 AGY/Gemini review evidence가 있어야 한다.
+
+MEDIUM/HIGH 설계 결정은 구현 전 design review evidence도 있어야 한다.
+
+리뷰가 정상적으로 허용된 환경인데 AGY bridge/runtime가 실패했다면 `review: BLOCKED`로 기록하고 완료로 처리하지 않는다.
+
+회사/고객 policy가 AGY에 source 제공을 금지하면 `AGY_NOT_PERMITTED_BY_POLICY`를 기록하고 그 프로젝트가 승인한 independent reviewer로 대체한다. 이 예외는 data-boundary 준수를 위한 것이며 review 자체를 생략하는 예외가 아니다.
+
+## CR-009 — AGY/Gemini finding을 evidence와 대조한다 — MUST
+
+AGY/Gemini가 제시한 finding은 provisional이다. finding별로 다음을 기록한다.
+
+- `ACCEPTED`
+- `MODIFIED`
+- `REJECTED`
+- `DEFERRED`
+
+특히 version-dependent framework/security 주장, 회사/고객 정책 관련 주장, performance 수치, 특정 library 동작은 현재 공식 문서와 실제 runtime/test evidence를 확인한다.
+
+AGY finding의 wording이나 severity 자체를 권위로 사용하지 않는다.
+
 ## Review finding 수준
 
-severity는 **위험과 수정 필요성**을 나타내며, 취향 차이를 높게 분류하지 않는다.
+severity는 **reconciliation 후 확인된 위험과 수정 필요성**을 나타내며, 취향 차이를 높게 분류하지 않는다.
 
 ### `BLOCKER` — merge/release blocking
 
@@ -86,9 +110,9 @@ severity는 **위험과 수정 필요성**을 나타내며, 취향 차이를 높
 
 ### `MAJOR` — 기본적으로 blocking
 
-correctness, reliability, security, maintainability 또는 test coverage의 실질적인 문제로, merge 전 해결하는 것이 기본값이다.
+correctness, reliability, security, maintainability 또는 test adequacy의 실질적인 문제로, merge 전 해결하는 것이 기본값이다.
 
-프로젝트 owner가 명시적으로 residual risk를 수용하고 별도 후속조치를 기록하는 경우 예외가 가능하다.
+프로젝트 owner가 명시적으로 residual risk를 수용하고 상위 policy가 이를 허용하며 별도 후속조치를 기록하는 경우 예외가 가능하다.
 
 ### `MINOR` — non-blocking by default
 
@@ -106,35 +130,41 @@ style, naming, 표현 등 선택적 개선. formatter/linter로 자동화 가능
 
 ## 승인 조건
 
-리뷰어는 최소한 다음을 납득해야 한다.
+리뷰어/owner는 최소한 다음을 납득해야 한다.
 - 변경 목적과 scope가 맞다.
 - 중요한 요구사항을 충족한다.
-- 알려진 BLOCKER가 없다.
-- unresolved MAJOR는 해결되었거나 명시적으로 위험 수용됐다.
-- 필요한 verification evidence가 있다.
+- deterministic verification evidence가 있다.
+- mandatory AGY/Gemini review 또는 policy-approved replacement review가 수행됐다.
+- AGY/independent-review findings가 reconciliation됐다.
+- confirmed BLOCKER가 없다.
+- unresolved confirmed MAJOR는 해결되었거나 상위 policy가 허용하는 방식으로 명시적 위험 수용됐다.
 - 알려진 잔여 위험이 숨겨져 있지 않다.
 
-Solo/AI-pair mode의 최종 self-approval 가능 여부와 independent review expectation은 [`../OPERATING_MODEL.md`](../OPERATING_MODEL.md)를 따른다.
+회사 프로젝트의 human approval/separation-of-duties가 별도로 요구되면 AGY review는 이를 대체하지 않는다.
 
-## AI Review 사용
+## AGY/Gemini Review prompt 기본값
 
-AI 리뷰는 추가 reviewer로 사용할 수 있으나 실행 증거 또는 조직이 요구하는 human approval을 자동 대체하지 않는다.
+첫 독립 리뷰는 가능한 한 neutral하게 요청한다.
 
-HIGH risk에서는 가능하면 implementation agent와 분리된 context/model의 review를 사용한다. LOW/MEDIUM에서는 비용·복잡도에 비례해 선택한다.
+```text
+Review the supplied requirement/context and exact final diff/source independently.
+Find correctness, security, data-integrity, concurrency, failure/recovery,
+operability, maintainability, testing and unintended-scope issues.
+Classify findings as BLOCKER/MAJOR/MINOR/NIT/QUESTION.
+For version-sensitive claims, identify what must be checked against official docs.
+Do not assume the implementation author's conclusion is correct.
+```
 
-AI finding은 다음을 별도로 확인한다.
-- 실제 코드/요구에 근거하는가?
-- 라이브러리/버전 동작을 공식 문서로 확인했는가?
-- 존재하지 않는 requirement를 만들어내지 않았는가?
-- theoretical issue와 실제 위험을 구분했는가?
-- severity를 과장하지 않았는가?
+첫 independent pass 뒤에 ChatGPT/Codex/owner가 finding을 공식자료·실행증거와 reconciliation한다.
 
 ## 근거
 
 - Google Engineering Practices - Code Review: https://google.github.io/eng-practices/review/
 - NIST SP 800-218 SSDF v1.1: https://csrc.nist.gov/pubs/sp/800/218/final
+- Owner mandatory review policy: `../REVIEW_POLICY.md`
 
 ## Review record
 
 - 2026-09-06: ChatGPT initial draft.
-- 2026-09-06: AGY/Gemini #351 finding accepted; severity and blocking semantics made explicit to prevent NIT/QUESTION-driven delivery stalls.
+- 2026-09-06: AGY/Gemini #351 finding accepted; severity and blocking semantics made explicit.
+- 2026-09-06: Owner explicitly made AGY/Gemini independent review mandatory for substantive engineering changes while requiring evidence-based reconciliation instead of automatic acceptance.
