@@ -1,9 +1,10 @@
 # Testing and Verification Standard
 
 - status: `draft`
-- version: `0.1`
+- version: `0.2`
 - baseline_date: `2026-09-06`
 - practical_reference: `ISTQB CTFL v4.0.1`
+- operating_model: [`../OPERATING_MODEL.md`](../OPERATING_MODEL.md)
 
 ## 목적
 
@@ -35,10 +36,9 @@ requirement/risk -> test or review -> evidence -> result
 ## TST-003 — Happy path만으로 완료하지 않는다 — MUST for important behavior
 
 해당되는 경우 다음을 포함한다.
-
 - invalid input
 - unauthorized / forbidden
-- not found / object ownership mismatch
+- object ownership mismatch
 - duplicate/retry
 - concurrency/race
 - timeout
@@ -64,7 +64,6 @@ unique constraint, foreign key, transaction, isolation, migration 같은 동작�
 ## TST-007 — Security negative test를 별도로 생각한다 — MUST when access/data is protected
 
 예:
-
 - 인증 없는 접근
 - 잘못된 역할
 - 다른 사용자 object ID
@@ -79,18 +78,22 @@ unique constraint, foreign key, transaction, isolation, migration 같은 동작�
 
 line/branch coverage 임계값은 필요하면 사용할 수 있지만, 높은 coverage를 품질 보장으로 해석하지 않는다. 중요한 state transition, failure path, authorization rule이 누락되지 않았는지가 우선이다.
 
-## TST-010 — 테스트 결과 상태를 명확히 구분한다 — MUST
+## TST-010 — 실행 evidence 상태를 명확히 구분한다 — MUST
 
-- `PASS`: 실제 실행/확인 성공
-- `FAIL`: 기대 불충족
-- `NOT RUN`: 실행하지 않음
-- `BLOCKED`: 환경/권한/자료 때문에 실행 불가
+Handbook/PR/test-plan의 **검증 요약**은 다음 상태를 사용한다.
 
-작성된 테스트와 실행된 테스트를 혼동하지 않는다.
+- `PASS`: 계획한 확인을 실제 실행했고 기대를 충족
+- `FAIL`: 실행했고 기대를 충족하지 못함
+- `NOT RUN`: 계획했거나 필요성을 인식했지만 실행하지 않음
+- `BLOCKED`: 환경/권한/자료 때문에 실행할 수 없음
+
+이 4개 상태를 JUnit, pytest 등 test framework의 내부 status vocabulary로 강제하지 않는다. framework의 `SKIPPED`, `ABORTED` 등 원래 결과는 그대로 보존하고, 최종 evidence report에서 필요하면 이유와 함께 요약한다.
+
+**MUST:** 작성한 테스트와 실제 실행한 테스트를 혼동하지 않는다.
 
 ## Regression 기준
 
-bug fix에는 가능하면 해당 결함을 재현하는 실패 테스트 또는 동일 수준의 재현 evidence를 먼저 확보하고 수정 후 통과를 확인한다.
+bug fix에는 가능하면 해당 결함을 재현하는 실패 테스트 또는 동일 수준의 재현 evidence를 확보하고 수정 후 통과를 확인한다.
 
 ## Verification vs Validation
 
@@ -117,7 +120,7 @@ bug fix에는 가능하면 해당 결함을 재현하는 실패 테스트 또는
 
 ## Test Plan 최소 형식
 
-중간 이상 변경은 다음 정도면 충분하다.
+MEDIUM/HIGH risk에서 필요한 범위로 다음을 사용한다.
 
 ```text
 Scope
@@ -130,6 +133,8 @@ Entry/exit criteria
 Known gaps
 Evidence location
 ```
+
+LOW risk에는 이 전체 template을 강제하지 않는다.
 
 ## 검수 checklist
 
@@ -151,4 +156,4 @@ Evidence location
 ## Review record
 
 - 2026-09-06: ChatGPT initial draft.
-- Independent AGY/Gemini review: pending.
+- 2026-09-06: AGY/Gemini #351 terminology finding accepted; PASS/FAIL/NOT RUN/BLOCKED clarified as evidence-report states rather than custom runner states.
