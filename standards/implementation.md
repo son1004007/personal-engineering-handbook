@@ -1,9 +1,10 @@
 # Implementation Standard
 
 - status: `draft`
-- version: `0.1`
+- version: `0.2`
 - baseline_date: `2026-09-06`
 - scope: `language/framework neutral`
+- operating_model: [`../OPERATING_MODEL.md`](../OPERATING_MODEL.md)
 
 ## 목적
 
@@ -18,7 +19,6 @@
 ## IMP-002 — 명시적 계약을 우선한다 — MUST
 
 다음은 코드 또는 가까운 문서/테스트에서 판정 가능해야 한다.
-
 - 입력 허용 범위
 - 반환/오류 의미
 - 상태 변경
@@ -31,8 +31,6 @@
 
 코드가 이미 표현하는 동작을 주석으로 반복하지 않는다. 설명은 업무 규칙, 제약, 실패 방식, 변경 영향을 중심으로 한다.
 
-상세 언어별 기준은 별도 문서로 분리한다.
-
 ## IMP-004 — 신뢰 경계를 명시한다 — MUST
 
 사용자 입력, 외부 API, file, message, LLM output, client-supplied identifier 등 신뢰하지 않는 데이터는 검증 없이 내부 불변조건에 직접 사용하지 않는다.
@@ -40,7 +38,6 @@
 ## IMP-005 — 핵심 invariant는 가장 강한 적절한 경계에서 보호한다 — SHOULD
 
 예:
-
 - unique business identity → DB unique constraint 검토
 - 허용 상태 전이 → domain/application rule
 - 객체 소유권 → server-side authorization
@@ -55,7 +52,6 @@
 ## IMP-007 — 실패 후 상태를 먼저 생각한다 — MUST for state-changing code
 
 상태를 바꾸는 코드는 다음을 검토한다.
-
 - 중간 실패 시 무엇이 남는가?
 - transaction으로 묶어야 하는가?
 - 외부 side effect와 DB commit 순서는 안전한가?
@@ -69,7 +65,6 @@
 ## IMP-009 — 불필요한 추상화를 만들지 않는다 — SHOULD
 
 다음 이유가 명확하지 않으면 abstraction을 추가하지 않는다.
-
 - 정책을 한 곳에서 강제
 - 구현 교체 가능성이 실제로 존재
 - 테스트 경계가 필요
@@ -82,9 +77,13 @@
 
 비밀정보는 source code/repository에 저장하지 않는다. configuration 값도 환경별 차이와 안전한 기본값을 분명히 한다.
 
-## IMP-011 — 로그는 운영과 감사에 필요한 정보를 남기되 민감정보를 최소화한다 — MUST
+## IMP-011 — Secret/credential은 로그에 남기지 않는다 — MUST
 
-로그에 password/token/session/secret 및 불필요한 개인정보를 남기지 않는다. 식별이 필요한 경우 최소한의 stable identifier/correlation id를 사용한다.
+password, token, API key, private key, session/OAuth credential 등 **secret/credential은 로그에 기록하지 않는다.**
+
+개인정보·민감 업무 데이터는 프로젝트의 법률/계약/보안 정책을 우선하며, 운영 진단에 꼭 필요한 값만 최소화·mask/pseudonymize한다. 식별이 필요한 경우 가능한 범위에서 stable identifier/correlation id를 사용한다.
+
+`민감정보를 최소화한다`는 표현을 secret 일부를 남겨도 된다는 의미로 해석하지 않는다. secret 노출 시 대응은 [`security.md`](security.md)를 따른다.
 
 ## IMP-012 — 변경 가능성보다 이해 가능성을 먼저 최적화한다 — SHOULD
 
@@ -98,7 +97,7 @@
 - [ ] 권한 및 신뢰 경계가 필요한 위치에서 확인된다.
 - [ ] 데이터 invariant와 transaction을 검토했다.
 - [ ] 외부 I/O timeout/retry/side effect를 검토했다.
-- [ ] secret/민감정보 노출이 없다.
+- [ ] secret/credential/민감정보 노출이 없다.
 - [ ] 테스트 가능한 구조다.
 
 ## 근거
@@ -110,4 +109,4 @@
 ## Review record
 
 - 2026-09-06: ChatGPT initial draft.
-- Independent AGY/Gemini review: pending.
+- 2026-09-06: AGY/Gemini #351 finding on logging ambiguity accepted; secret/credential prohibition separated from general data minimization.
