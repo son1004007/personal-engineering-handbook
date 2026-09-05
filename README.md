@@ -1,13 +1,12 @@
 # Personal Engineering Handbook
 
-> Status: **independently reviewed baseline + approved mandatory review policy**  
+> Status: **independently reviewed baseline + approved mandatory review policy v1.1**  
 > Baseline date: **2026-09-06**  
-> Mandatory review policy: **approved by owner 2026-09-06**  
-> Prior final independent baseline review: **AGY/Gemini READY_FOR_REVIEWED, BLOCKER 0**
+> Mandatory review policy: **approved by owner 2026-09-06**
 
 개인적으로 사용하는 소프트웨어 엔지니어링 원칙, SDLC 기준, 개발 표준, 검토 체크리스트를 공개 가능한 형태로 정리하는 저장소입니다.
 
-이 저장소의 목적은 단순한 `coding style` 모음이 아닙니다. **개인 프로젝트뿐 아니라 회사·고객 프로젝트에서 내가 수행하는 작업 방식의 기본 골격으로 사용하되, 법률·계약·회사·고객·프로젝트 정책을 항상 우선합니다.**
+이 저장소의 목적은 단순한 coding style 모음이 아닙니다. **개인 프로젝트뿐 아니라 회사·고객 프로젝트에서 내가 수행하는 작업 방식의 기본 골격으로 사용하되, 법률·계약·회사·고객·프로젝트 정책을 항상 우선합니다.**
 
 ```text
 문제 정의
@@ -17,38 +16,45 @@
 -> 구현
 -> verification / testing
 -> mandatory independent review
--> finding reconciliation
+-> arbitration / finding reconciliation
 -> validation / acceptance
 -> release
 -> operation / retrospective
 ```
 
-## Mandatory review — approved
+## Mandatory review — approved v1.1
 
 가장 먼저 [`REVIEW_POLICY.md`](REVIEW_POLICY.md)를 읽습니다.
 
 현재 owner-approved 기본값:
 
-- substantive code/config/schema/API/infra/security/deployment behavior change는 **AGY/Gemini independent final review MUST**
-- MEDIUM/HIGH architecture/security/data/operation decision은 **구현 전 AGY/Gemini design review MUST**
-- AGY/Gemini finding은 자동 정답이 아니라 `ACCEPTED / MODIFIED / REJECTED / DEFERRED`로 evidence-based reconciliation MUST
-- 회사/고객 policy가 외부 AGY에 정보 제공을 금지하면 data를 반출하지 않고 `AGY_NOT_PERMITTED_BY_POLICY`를 기록한 뒤 프로젝트가 승인한 독립 reviewer로 대체
-- break-glass containment는 review를 지연할 수 있지만 없애지는 못함
+- **Personal / explicitly AGY-authorized environment**
+  - substantive change: AGY/Gemini independent final review MUST
+  - MEDIUM/HIGH design: AGY/Gemini independent design review MUST
+- **Company/client environment**
+  - independent review MUST
+  - external/personal AGY is **DEFAULT DENY** until explicit authorization for service/repository/data classification is confirmed
+  - authorization이 없거나 불명확하면 `AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA` + company-approved human/internal-AI reviewer
+- AGY/Gemini finding은 자동 정답이 아니라 evidence-based reconciliation 대상
+- AGY BLOCKER/MAJOR는 구현자가 혼자 기각/하향할 수 없음
+  - personal: objective evidence + second independent reviewer + owner disposition
+  - company: objective evidence + human peer/tech lead/security owner/designated reviewer concurrence
+- break-glass는 review를 defer할 수 있지만 `review_owner`, `review_due`, post-release review/remediation을 반드시 남김
 
-즉 **문서량은 risk-based, 독립 review는 mandatory**입니다.
+즉 **문서량은 risk-based, independent review는 mandatory, 회사 데이터는 default-deny, 고위험 finding은 독립 arbitration**입니다.
 
 ## Current baseline
 
 ### Operating / review model
 
-- [`REVIEW_POLICY.md`](REVIEW_POLICY.md) — **approved v1.0**, mandatory AGY/Gemini independent review + reconciliation
+- [`REVIEW_POLICY.md`](REVIEW_POLICY.md) — **approved v1.1**, mandatory independent review, arbitration, company default-deny boundary
 - [`OPERATING_MODEL.md`](OPERATING_MODEL.md) — BCP14 vocabulary, Solo/Team, LOW/MEDIUM/HIGH risk tier, inference boundary, break-glass, anti-overengineering
 
 ### Lifecycle
 
-- [`lifecycle/00-engineering-lifecycle.md`](lifecycle/00-engineering-lifecycle.md) — 전체 SDLC concern map
-- [`lifecycle/01-requirements.md`](lifecycle/01-requirements.md) — requirement/source/acceptance/traceability
-- [`lifecycle/02-architecture-and-design.md`](lifecycle/02-architecture-and-design.md) — architecture, data, security, operability, dependency, evolution
+- [`lifecycle/00-engineering-lifecycle.md`](lifecycle/00-engineering-lifecycle.md)
+- [`lifecycle/01-requirements.md`](lifecycle/01-requirements.md)
+- [`lifecycle/02-architecture-and-design.md`](lifecycle/02-architecture-and-design.md)
 
 ### Engineering standards
 
@@ -69,6 +75,7 @@
 
 - [`reviews/2026-09-06-initial-agy-gemini-review.md`](reviews/2026-09-06-initial-agy-gemini-review.md)
 - [`reviews/2026-09-06-final-agy-gemini-review.md`](reviews/2026-09-06-final-agy-gemini-review.md)
+- policy governance review: device-control Issue `#353`, run `33996776013`
 
 ## Authority
 
@@ -83,9 +90,7 @@
 > AI의 자체 판단
 ```
 
-프로젝트 규칙과 handbook이 충돌하면 프로젝트 규칙을 우선합니다.
-
-## Public boundary
+## Public / company-data boundary
 
 이 저장소는 개인적으로 독립 작성한 일반 원칙만 공개합니다.
 
@@ -94,9 +99,8 @@
 - 고객사명, 내부 IP/URL, 계정, schema/table 이름, 실제 운영 데이터와 비공개 architecture를 포함하지 않습니다.
 - 예시는 synthetic domain / synthetic data로 독립 작성합니다.
 - 이 저장소는 현재 또는 과거 고용주, 고객사의 공식 정책이 아닙니다.
-- 회사 프로젝트 review를 위해 AGY를 사용할 때도 **회사/고객의 AI 사용·데이터 반출 정책을 우회하지 않습니다.**
 
-자세한 내용은 [`PUBLICATION_POLICY.md`](PUBLICATION_POLICY.md)를 따릅니다.
+회사 프로젝트 내용을 개인 Synology AGY, 개인 외부 AI 또는 public GitHub로 보내는 것은 **명시적 organizational/contractual authorization이 확인되기 전에는 금지**합니다. 회사가 승인한 내부/enterprise AI가 있다면 그 승인 범위 안에서 사용합니다.
 
 ## Rule status
 
@@ -106,7 +110,7 @@
 - `deprecated`: 신규 작업에 적용하지 않음
 - `superseded`: 새로운 문서가 대체
 
-현재 **mandatory review policy는 approved**, 나머지 2026-09-06 baseline은 독립 검토를 받은 상태에서 계속 세부 검증·승인을 진행합니다.
+현재 mandatory review policy는 approved v1.1이고, 나머지 baseline은 세부 검증·승인을 계속 진행합니다.
 
 ## Review principle
 
@@ -120,31 +124,15 @@
 > implementation agent의 자체 주장
 ```
 
-AGY/Gemini review는 **항상 수행하는 독립 검토 gate**지만, finding 내용은 공식 문서와 실제 환경으로 교차검증해 `accepted / modified / rejected / deferred`를 기록합니다.
+AGY/Gemini review는 독립 검토 도구이며 절대 권위가 아닙니다. 그러나 BLOCKER/MAJOR를 구현자 혼자 무시할 수도 없습니다.
+
+## Company adoption
+
+회사 프로젝트에서는 이 handbook을 **별도 shadow governance로 만들지 않습니다.** 가능한 한 기존 ticket, design doc, PR, CI, security review, change-management에 이 기준을 mapping합니다. 팀이 formal adoption하지 않았다면 내 작업 품질을 높이는 개인 discipline으로 사용합니다.
 
 ## References
 
 현재 기준 버전과 공식 링크는 [`references/README.md`](references/README.md)를 따릅니다.
-
-주요 baseline:
-
-- ISO/IEC/IEEE 12207:2026
-- ISO/IEC/IEEE 29148:2018
-- ISO/IEC/IEEE 42010:2022
-- ISO/IEC 25010:2023
-- NIST SP 800-218 SSDF v1.1
-- OWASP ASVS 5.0.0
-- ISTQB CTFL v4.0.1
-- RFC 2119 / RFC 8174
-- language/framework-specific current official documentation
-
-## Existing source material
-
-초기 작성에는 다음 기존 개인 자산을 참고했지만 그대로 복제하지 않고 public boundary와 최신 근거를 다시 검토했습니다.
-
-- `son1004007/ai-agent-workflow-playbook/WORKFLOW.md`
-- `son1004007/engineering-career-portfolio/03_portfolio/code-explanation-standard.md`
-- `son1004007/son1004007.github.io`의 공개 기술 글
 
 ## Global control
 
@@ -152,4 +140,4 @@ Cross-repository AI 작업은 다음 전역 control을 먼저 따릅니다.
 
 `son1004007/ai-agent-workflow-playbook/CONTROL.md`
 
-이 handbook은 **engineering practice와 mandatory review policy의 Source of Truth**이고, global control은 **AI workflow / repository routing의 Source of Truth**입니다.
+이 handbook은 engineering practice와 mandatory review policy의 Source of Truth이고, global control은 AI workflow / repository routing의 Source of Truth입니다.
