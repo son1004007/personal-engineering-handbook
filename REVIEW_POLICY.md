@@ -1,27 +1,28 @@
 # Mandatory Independent Review Policy
 
 - status: `approved`
-- version: `1.2`
+- version: `1.3`
 - approved_date: `2026-09-06`
 - last_reviewed: `2026-09-06`
-- owner_decision: `Independent review is mandatory; AGY/Gemini is mandatory for personal or explicitly authorized environments; findings are rebuttable evidence, not automatic truth.`
+- owner_decision: `Independent review is mandatory; AGY/Gemini is mandatory for personal or explicitly authorized environments; AI severity and findings are review inputs, not authority.`
 - review_evidence:
   - `device-control issue #353 / workflow run 33996776013`
   - `device-control issue #354 / workflow run 33997032701`
+  - `device-control issue #355 / workflow run 33997311911`
 
 ## Purpose
 
-이 정책은 개인 프로젝트와 회사·고객 프로젝트에서 내가 수행하는 기획·설계·구현·테스트·검수에 **독립적인 반대 관점**을 강제로 넣기 위한 quality gate다.
+개인 프로젝트와 회사·고객 프로젝트에서 내가 수행하는 engineering work에 독립적인 반대 관점을 강제로 넣는다.
 
-핵심 원칙:
+핵심:
 
-1. **Substantive engineering change의 independent review는 필수다.**
-2. **개인 또는 명시적으로 AGY 사용이 승인된 환경에서는 AGY/Gemini review를 필수로 사용한다.**
-3. **AGY/Gemini finding은 자동 정답이 아니다.**
-4. **BLOCKER/MAJOR를 근거 없이 기각하거나 하향할 수 없다.**
-5. **명확한 deterministic/official counter-evidence가 AI finding을 직접 반증하면 불필요한 추가 ceremony를 강제하지 않는다.**
-6. **회사·고객 데이터의 개인/외부 AGY 전송은 DEFAULT DENY다.**
-7. **회사에서는 기존 PR/CI/security/change-management에 이 원칙을 mapping하며 shadow governance를 만들지 않는다.**
+1. substantive change는 independent review MUST.
+2. personal / explicitly AGY-authorized environment는 AGY/Gemini review MUST.
+3. AI finding과 AI가 붙인 severity는 **provisional**이다.
+4. review 결과를 무조건 수용하지도, 근거 없이 무시하지도 않는다.
+5. release gate는 **calibrated severity + evidence + governance**로 결정한다.
+6. company/client data의 personal/external AGY 전송은 DEFAULT DENY.
+7. company에서는 기존 governance에 mapping하고 shadow process를 만들지 않는다.
 
 ## 1. Authority
 
@@ -30,283 +31,234 @@
 > 회사 정책 / 승인된 프로젝트 표준
 > 프로젝트 AGENTS / 보안 / AI-use / 데이터 반출 정책
 > 이 REVIEW_POLICY.md
-> handbook의 다른 approved/reviewed rules
+> 다른 handbook rules
 > AI preference
 ```
 
-이 handbook은 조직의 공식 review/change-management 절차를 대체하거나 축소하지 않는다.
+## 2. Review unit and applicability
 
-## 2. Review applicability
+Review는 **개별 편집/commit마다가 아니라 하나의 logical change set / PR / release candidate**를 기본 단위로 한다. TDD 중 작은 test iteration마다 AGY를 다시 호출하지 않는다.
 
-### 2.1 `SUBSTANTIVE` — independent final review MUST
+### `SUBSTANTIVE` — independent final review MUST
 
-다음 중 하나라도 변경하면 substantive로 본다.
+다음 중 하나라도 logical change set에서 달라지면 substantive다.
 
-- runtime 또는 externally observable application behavior
-- business/acceptance semantics
-- authentication/authorization/security boundary
-- persistent data, schema, query, migration, integrity/ownership rule
+- runtime / externally observable behavior
+- business or acceptance semantics
+- authn/authz/security boundary
+- persistent data/schema/query/migration/invariant
 - API/event/file/interface contract
-- configuration/runtime profile behavior
-- infrastructure/network/container behavior
-- CI/CD, build, release, deployment 또는 quality gate behavior
-- dependency 추가·교체·version 변경으로 build/runtime/security/support 특성이 달라짐
-- test/fixture/assertion 변경으로 실제 acceptance 또는 regression protection 의미가 달라짐
-- 운영/장애/복구/권한 절차의 안전성 또는 결과가 달라짐
-- documentation-as-code/generated config처럼 문서 변경이 실제 시스템/정책/배포 결과를 바꿈
+- runtime/config/profile behavior
+- infra/network/container behavior
+- CI/build/release/deployment/quality-gate behavior
+- dependency change affecting build/runtime/security/support
+- test change that weakens, removes, or materially redefines acceptance/regression protection
+- operational safety/recovery behavior
+- documentation-as-code/generated config affecting system/policy/deployment behavior
 
-### 2.2 `NON_SUBSTANTIVE` — review MAY be NOT_APPLICABLE
+### `NON_SUBSTANTIVE`
 
-아래 조건을 **모두** 만족할 때만 non-substantive로 본다.
+아래가 모두 유지될 때만 review를 `NOT_APPLICABLE`로 둘 수 있다.
 
-- runtime/build/release/security/data behavior가 바뀌지 않음
-- acceptance/test semantics가 바뀌지 않음
-- externally visible contract가 바뀌지 않음
-- 오탈자, 표현, formatting, dead link 교정 등 의미 보존 변경임
+- runtime/build/release/security/data behavior unchanged
+- externally visible contract unchanged
+- acceptance/regression semantics unchanged
+- meaning-preserving typo/format/dead-link/editorial-only change
 
-회색 영역은 substantive로 분류하는 쪽을 기본값으로 한다.
+**Test-only additions/refactors**가 product behavior와 기존 acceptance를 바꾸지 않고 보호 범위만 추가·정리하는 경우, 그 자체는 별도 AGY review unit으로 만들지 않고 관련 logical change의 final review에 포함하거나 standalone이면 risk에 따라 lightweight independent review로 처리할 수 있다.
 
-Routine dependency bump, test refactor, developer tooling, CI 변경은 이름만으로 제외하지 않고 위 기준으로 판단한다.
+회색 영역은 substantive로 보는 쪽을 기본값으로 한다.
 
 ## 3. Design review
 
-MEDIUM/HIGH의 다음 결정은 구현 전에 independent design review를 MUST 수행한다.
+MEDIUM/HIGH architecture/security/data/operation decision은 implementation 전에 independent design review MUST.
 
-- architecture/component responsibility
-- authentication/authorization model
-- data ownership/invariant/migration
-- external API/integration contract
-- transaction/concurrency/idempotency
-- deployment/recovery
-- security policy/control
-- 되돌리기 어려운 선택
+Personal / AGY-authorized 환경에서는 AGY/Gemini design review를 사용한다.
 
-개인 또는 AGY-authorized 환경에서는 AGY/Gemini design review를 사용한다.
-
-LOW substantive change는 별도 pre-design review를 생략할 수 있지만 final review는 수행한다.
+LOW substantive change는 separate pre-design review를 생략할 수 있지만 final review는 수행한다.
 
 ## 4. Review independence
 
-첫 independent review 입력 기본값:
+첫 independent pass 입력:
 
 ```text
 original requirement / acceptance / constraints
 + exact draft/commit/diff
-+ 필요한 architecture/context
++ necessary architecture/context
 + deterministic verification evidence
 ```
 
-첫 pass에는 implementation agent의 결론, 예상 finding, `문제가 없다고 확인해 달라` 같은 유도 문구를 정답처럼 넣지 않는다.
+implementation-agent conclusion, expected finding, desired verdict를 truth로 seed하지 않는다.
 
-## 5. Review output
+## 5. AI finding severity is provisional
 
-최소 요구:
-
-- overall verdict
-- `BLOCKER / MAJOR / MINOR / NIT / QUESTION`
-- 대상 file/section/behavior
-- failure impact
-- 가능한 reproduction/verification
-- suggested fix
-- confidence / official-doc-check-needed 표시
-
-## 6. Finding state
-
-AGY 또는 equivalent independent AI finding은 provisional이다.
+AI raw label은 release gate를 직접 결정하지 않는다.
 
 ```text
-BLOCKER -> PENDING_BLOCKER
-MAJOR   -> PENDING_MAJOR
-MINOR/NIT/QUESTION -> non-blocking review item by default
+AI finding
+-> PENDING_TRIAGE
+-> severity rubric calibration
+-> evidence/arbitration
+-> final disposition
 ```
 
-`PENDING_BLOCKER`와 `PENDING_MAJOR`는 arbitration이 끝날 때까지 기본 blocking이다.
+AI가 `BLOCKER`라고 썼다는 사실만으로 즉시 BLOCKER가 되지 않는다. 반대로 낮은 severity를 붙였어도 실제 영향이 크면 상향한다.
 
-Disposition:
+## 6. Severity rubric
 
-- `ACCEPTED`
-- `MODIFIED`
-- `REJECTED`
-- `DEFERRED`
+### `BLOCKER`
 
-## 7. BLOCKER/MAJOR arbitration
+다음 중 하나가 **credible failure path / evidence / explicit obligation**과 함께 존재하여, fix 또는 authorized waiver 없이 release하기 부적절한 경우.
 
-### 7.1 Directly falsifiable finding
+- authn/authz/security boundary bypass 또는 high-impact exploit path
+- data loss/corruption 또는 critical invariant breach
+- explicit law/contract/project-policy violation
+- core acceptance/required behavior failure로 release 목적을 달성할 수 없음
+- destructive migration/release/recovery path가 demonstrably unsafe 또는 non-recoverable
+- verification evidence가 무효라 변경 안전성을 판단할 수 없음
+- active production safety/exposure가 크고 containment가 필요함
 
-다음처럼 finding의 핵심 사실을 **직접 반증하는 결정적 evidence**가 있으면 additional reviewer 없이 owner가 `REJECTED` 또는 severity-lowered `MODIFIED` disposition을 기록할 수 있다.
+단순 architecture preference, 일반적인 HA 권고, future scalability 우려, style/maintainability 논쟁만으로 BLOCKER를 부여하지 않는다. explicit requirement나 실제 위험이 연결되면 그때 영향에 맞게 분류한다.
 
-예:
+### `MAJOR`
 
-- 같은 조건의 deterministic reproduction/test가 finding의 전제를 명확히 반증
-- 사용 중인 정확한 version의 current official documentation이 주장과 직접 충돌
-- 실제 runtime probe가 해당 path/behavior가 존재하지 않음을 직접 입증
-- 명시적 requirement/contract가 finding이 가정한 requirement가 존재하지 않음을 명확히 입증
+release 전 해결이 기본인 substantial correctness/reliability/security/data/operability/test-adequacy risk. 다만 authorized risk acceptance가 가능한 수준.
 
-조건:
+### `MINOR`
 
-- evidence가 finding의 핵심을 **직접** 반증해야 한다.
-- 단순 `내 경험상`, 일반적인 best practice, 구현자의 해석만으로는 충분하지 않다.
-- disposition record에 evidence를 재현 가능하게 남긴다.
+현재 correctness/safety를 직접 깨지 않지만 개선 가치가 있음.
 
-이 경우 owner disposition은 **독립성 장벽이 아니라 의사결정 기록**이다.
+### `NIT`
 
-### 7.2 Interpretive / risk / design finding
+style/naming/expression 등 선택적 개선.
 
-다음처럼 객관적 evidence가 하나의 결론을 강제하지 않는 BLOCKER/MAJOR는 구현자가 단독 기각·하향할 수 없다.
+### `QUESTION`
 
-- architecture trade-off
-- security exploitability/risk 판단
-- concurrency/partial-failure 해석이 복수 가능
-- maintainability/operability blast radius
-- requirement ambiguity
-- 여러 evidence가 충돌함
+의도/근거 확인. 답변에 따라 재분류.
 
-#### Personal project
+## 7. Severity triage anti-gaming
 
-필요 조건:
+AI high-severity finding을 낮추려면 **finding 전체 scope와 counter-evidence scope가 일치**해야 한다.
 
-1. available counter-evidence
-2. **second independent reviewer**
-3. owner disposition record
+- narrow test로 일부 symptom만 반증하면서 broader security/design risk를 Category A로 위장하지 않는다.
+- finding에 factual claim과 interpretive risk가 섞여 있으면 분리한다.
+  - factual portion -> direct evidence로 판정 가능
+  - residual interpretive/risk portion -> independent arbitration 대상
+- security/data-integrity finding은 threat/failure path가 남는 한 단순 happy-path test만으로 종결하지 않는다.
 
-Eligible second independent reviewer:
+## 8. Arbitration
 
-- 구현에 참여하지 않은 human reviewer, 또는
-- **fresh context**에서 원 source/evidence를 독립적으로 검토하는 별도 AI reviewer
+### 8.1 Directly falsifiable factual finding
 
-동일 implementation agent의 자기 재판정, 단순 formatter/linter/static scanner는 independent semantic reviewer로 계산하지 않는다. 자동 도구 결과는 evidence로 사용한다.
+다음이 finding의 **core factual premise 전체를 직접 반증**하면 owner가 second reviewer 없이 `REJECTED` 또는 severity-lowered `MODIFIED`를 기록할 수 있다.
 
-#### Company/client project
+- same-condition deterministic reproduction/test
+- exact-version current official docs
+- direct runtime probe
+- explicit requirement/contract
 
-필요 조건:
+`내 경험상`, broad best practice, preference는 충분하지 않다.
 
-1. objective/counter evidence
-2. human peer / tech lead / security owner / designated reviewer의 명시적 concurrence
-3. 공식 project review/risk-acceptance process
+### 8.2 Interpretive / risk / design finding
 
-회사에서 사용하는 approved internal AI finding의 blocking/arbitration은 **회사 정책을 우선**한다. 별도 조직 규칙이 없고 그 AI가 independent reviewer 역할을 수행한다면 이 handbook의 pending/disposition 원칙을 fallback으로 사용하되, BLOCKER/MAJOR 기각·하향은 human concurrence 없이 처리하지 않는다.
+architecture trade-off, exploitability, concurrency/partial-failure, operability, requirement ambiguity, conflicting evidence처럼 하나의 객관적 증거로 끝나지 않으면 implementer-alone disposition을 금지한다.
 
-### 7.3 DEFERRED
+#### Personal
 
-- BLOCKER는 backlog 이동만으로 releaseable이 되지 않는다.
-- MAJOR도 기본적으로 merge/release 전 해결한다.
-- authorized risk acceptance가 허용되는 경우 owner/issue/due point를 기록한다.
+1. available evidence
+2. eligible second independent semantic reviewer
+3. **tie-break / risk decision**
 
-## 8. Evidence hierarchy
+Second reviewer 결과:
 
-```text
-법률/계약/회사·프로젝트 policy
-> runtime/test/reproduction evidence
-> current official standard/vendor/framework documentation
-> project requirement/architecture evidence
-> reputable engineering practice
-> independent AI finding
-> implementation agent self-claim
-```
+- **both reviewers substantially agree on the risk:** finding을 fix하거나 owner가 `RISK_ACCEPTED`/`WAIVED`로 명시한다. `REJECTED`라고 쓰지 않는다.
+- **reviewers disagree:** owner는 evidence와 trade-off를 기록하고 `MODIFIED`, `RISK_ACCEPTED`, 또는 fix를 선택한다. 두 의견을 숨기지 않는다.
+- **both inconclusive:** severity를 억지로 확정하지 말고 conservative risk statement와 bounded mitigation/test를 추가한 뒤 owner가 proceed/hold를 기록한다.
 
-상위 evidence가 있다고 해서 자동으로 finding이 무효가 되는 것은 아니다. **실제로 finding의 전제를 반증하는지**를 확인한다.
+Personal owner는 external obligations가 없는 자신의 프로젝트에서 위험을 의식적으로 수용할 수 있다. 단, 이를 false-positive `REJECTED`로 위장하지 않고 `RISK_ACCEPTED` 또는 `WAIVED`로 남긴다.
 
-## 9. Company/client data boundary — DEFAULT DENY
+#### Company/client
 
-### 9.1 Default
+- company/project policy 우선
+- BLOCKER/MAJOR downgrade/reject/risk acceptance는 appropriate human peer/tech lead/security owner/designated approver concurrence와 공식 절차를 따른다.
+- 개인 handbook이 owner에게 회사 risk acceptance 권한을 부여하지 않는다.
 
-회사·고객의 다음 내용을 개인 Synology AGY, 개인 외부 Gemini/LLM, public GitHub 또는 미승인 외부 AI에 보내는 것은 **명시적 authorization 전에는 금지**한다.
+## 9. Eligible independent reviewer
 
-- source/diff
-- schema/design/API/internal architecture
-- logs/errors
-- internal URL/IP/account
-- customer/personal/confidential data
-- non-public business/security constraints
-- 위 정보를 재구성하거나 추론할 수 있는 derived context
+Reviewer는:
 
-현재 개인 Synology AGY bridge는 회사 데이터에 승인되었다고 가정하지 않는다.
+- implementation과 분리됐거나 fresh context임
+- relevant source/evidence를 직접 검토 가능
+- correctness/security/data/operation semantic reasoning 가능
+- review result와 capability/identity 기록 가능
 
-### 9.2 Authorization
+가능:
+- human peer/lead/security reviewer
+- company-approved internal AI reviewer
+- 별도 fresh-context high-capability reasoning/review AI
 
-회사 내용으로 external/AGY review를 하려면 최소 다음이 명시적으로 확인되어야 한다.
+불충분:
+- same implementation-agent self-review
+- formatter/linter/test runner/SAST alone
+- context를 충분히 읽지 못하는 단순 classifier/small utility model
 
-- service/endpoint approval
+High-risk personal substitute AI는 **현재 작업의 full relevant context와 반례/보안/실패 분석을 수행할 수 있는 reasoning/review capability**가 있어야 한다. 모델 이름 자체로 품질을 보장하지 않는다.
+
+## 10. Company/client data boundary — DEFAULT DENY
+
+회사·고객의 source/diff/schema/design/log/API/internal context/sensitive data/non-public derived context를 personal Synology, public GitHub, personal external LLM 또는 unapproved AI에 보내지 않는다 unless explicit authorization covers:
+
+- service/endpoint
 - repository/project scope
 - data classification
-- applicable contract/security conditions
+- applicable contractual/security conditions
 
-가능하면 company-approved internal/enterprise AI를 우선한다.
+현재 personal Synology AGY는 company data에 승인된 것으로 가정하지 않는다.
 
-### 9.3 Generic question vs derived information
-
-**독립적으로 작성 가능한 일반 기술 질문**은 회사 confidential derived data로 간주하지 않을 수 있다. 예:
-
-> "Spring transaction self-invocation의 일반 동작은 무엇인가?"
-
-단, 다음 중 하나라도 포함하면 company-derived context로 취급한다.
-
-- 비공개 코드 구조/이름/수치/업무 규칙에서만 나올 수 있는 정보
-- 내부 architecture/topology/constraint를 유추할 수 있는 detail
-- customer/project-specific failure sequence나 data shape
-- scrubbed 형태라도 원 confidential source를 역추론하기 쉬운 조합
-
-불확실하면 외부로 보내지 않고 company-approved source/reviewer를 사용한다.
-
-### 9.4 Not authorized
+Authorization absent/unclear:
 
 ```text
-review: AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA
+AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA
+-> company-approved independent reviewer
 ```
 
-를 기록하고 company-approved human/internal-AI reviewer를 사용한다. 이 경우 `AGY reviewed`라고 기록하지 않는다.
+### Generic question
 
-## 10. Company adoption — no shadow governance
+회사 사실 없이 독립적으로 formulation 가능한 일반 기술 질문은 external use가 가능할 수 있다. 그러나 non-public code/names/values/business rules/topology/project-specific failure/data shape를 포함하거나 재구성 가능하면 derived context로 취급한다. 불확실하면 외부 전송하지 않는다.
 
-기존 artifact에 mapping한다.
+## 11. Company adoption — no shadow governance
+
+Handbook discipline은 기존 artifact에 mapping한다.
 
 ```text
 requirements/design -> ticket/design doc
-verification -> CI/test evidence
+verification -> CI/test
 independent review -> PR reviewer/security review/approved internal AI
 reconciliation -> PR discussion/review record
 release -> existing change management
 ```
 
-팀이 formal adoption하지 않았다면 개인 quality discipline으로 사용하며, 별도 개인 AGY sign-off process를 팀에 강제하지 않는다.
+팀에 personal AGY sign-off나 별도 workflow를 강제하지 않는다 unless formally adopted.
 
-## 11. Substitute independent reviewer
-
-AGY가 사용할 수 없을 때 substitute reviewer는 다음 조건을 만족해야 한다.
-
-- implementation에 직접 참여하지 않았거나 fresh context로 분리됨
-- review 대상 source/evidence를 직접 볼 수 있음
-- correctness/security/data/operation 관점의 semantic review가 가능함
-- 최소권한/read-only가 가능한 경우 그렇게 사용
-- review 결과와 identity/capability를 기록
-
-가능한 예:
-
-- human peer/lead/security reviewer
-- company-approved internal AI review agent
-- 다른 independent AI/model/context
-
-단순 linter, formatter, unit test runner, SAST 결과 자체는 **reviewer가 아니라 evidence**다.
-
-## 12. Tool/runtime failure
+## 12. Tool failure
 
 ### Personal
 
-AGY failure 시:
+AGY unavailable:
 
 ```text
-review: AGY_RUNTIME_UNAVAILABLE
+AGY_RUNTIME_UNAVAILABLE
 ```
 
-정상 Done은 AGY 복구 또는 위 기준을 만족하는 owner-approved substitute independent reviewer가 review를 완료할 때까지 보류한다.
+AGY recovery 또는 eligible owner-approved substitute independent reviewer가 review할 때까지 normal Done을 보류한다.
 
 ### Company/client
 
-personal/approved AGY failure를 delivery SPOF로 만들지 않는다. 기존 company mandatory human/security/internal-AI review가 완료되면 independent-review 의무를 충족할 수 있다.
+personal/approved AGY failure를 organization delivery SPOF로 만들지 않는다. company-approved mandatory reviewer path가 완료되면 independent-review requirement를 충족할 수 있다.
 
-## 13. Break-glass — design + final review explicit deferral
+## 13. Break-glass — both design and final review deferrable
 
-Active incident, data-loss expansion, security containment에서는 **pre-implementation design review와 final review 모두 containment를 지연시키면 defer할 수 있다.**
+Active incident/data-loss/security containment에서는 review delay가 더 위험하면 **pre-design과 final review 모두 defer 가능**.
 
 ```text
 TRIAGE
@@ -318,51 +270,76 @@ TRIAGE
 -> RETRO / RECONCILE
 ```
 
-defer 시:
+Record:
 
 ```text
-review: REVIEW_DEFERRED_BREAK_GLASS
+REVIEW_DEFERRED_BREAK_GLASS
 review_scope: DESIGN | FINAL | BOTH
-review_owner: <responsible person/role>
-review_due: <project-policy deadline or explicit concrete deadline>
+review_owner: ...
+review_due: project-policy deadline or explicit concrete deadline
 ```
 
-Rules:
-
-- project incident/change policy deadline 우선
+- project policy deadline 우선
 - open-ended defer 금지
-- 별도 정책이 없으면 concrete due point 지정
-- 늦어도 incident/problem record 종료 또는 같은 영역의 다음 non-emergency production change 전에 review/reconciliation 완료
-- post-release BLOCKER 발견 시 즉시 exposure/blast radius 재평가 후 project incident/change process에 따라 containment/rollback/disable/forward-fix + human/security escalation
+- no-policy case: concrete due point
+- 늦어도 incident/problem closure 또는 same-area next non-emergency production change 전에 review/reconciliation
 
-전역 고정 `24h/48h` 숫자는 강제하지 않는다.
+### Post-release serious finding
 
-## 14. Review record
+- company: project incident/change process + human/security escalation
+- personal: owner가 incident owner 역할을 맡아 exposure를 재평가하고 필요 시 rollback/disable/contain/forward-fix 후 evidence를 남김
+
+## 14. Risk acceptance / waiver
+
+`RISK_ACCEPTED` 또는 `WAIVED`는 `REJECTED`와 다르다.
+
+최소 기록:
 
 ```text
-review_required: yes
-reviewer: AGY/Gemini | substitute | company-approved reviewer
-review_mode: independent read-only
-input_ref: <commit/diff/draft>
-result: PASS | FINDINGS | BLOCKED | AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA
-blocker: <n>
-major: <n>
-disposition:
-  accepted: ...
-  modified: ...
-  rejected: ...
-  deferred: ...
-arbitration:
-  type: direct-counter-evidence | second-review | company-governance
-  evidence: ...
-  reviewer: ...
-residual_risk: ...
+finding
+calibrated severity
+reason not fixed now
+known impact / blast radius
+mitigation
+reviewer opinions
+owner/authorized approver
+expiry/revisit trigger if relevant
 ```
 
-## 15. Review history
+Company/client risk acceptance는 company-authorized role/process만 수행할 수 있다.
 
-- 2026-09-06: v1.0 owner mandatory-review intent established.
-- 2026-09-06: AGY/Gemini #353 rejected v1.0; self-arbitration, company default-deny, tool-SPOF, break-glass and shadow-governance findings incorporated into v1.1.
-- 2026-09-06: AGY/Gemini #354 returned `NOT_READY`; solo arbitration deadlock and break-glass pre-design-review ambiguity were BLOCKERs.
-- 2026-09-06: v1.2 accepted/modified those findings: decisive counter-evidence can resolve directly falsifiable AI findings without mandatory second review; interpretive/risk findings still require independent arbitration; substitute reviewer criteria, internal-AI governance, substantive classification, generic-vs-derived context and explicit design-review break-glass deferral were added.
-- AGY suggestion that personal owner disposition should act like institutional separation-of-duties was not adopted; in personal work it is treated as an auditable decision record, not fake organizational separation.
+## 15. Evidence hierarchy
+
+```text
+law/contract/company/project policy
+> runtime/test/reproduction
+> current official docs
+> project requirements/architecture
+> reputable engineering practice
+> independent AI finding
+> implementer self-claim
+```
+
+상위 evidence는 finding scope를 실제로 반증할 때만 dismissal 근거가 된다.
+
+## 16. Done
+
+Done requires, as applicable:
+
+- deterministic verification
+- required independent design/final review
+- severity calibration
+- arbitration/reconciliation
+- no unresolved unwaived calibrated BLOCKER
+- MAJOR fixed or policy-compliant risk acceptance
+- company reviewer/data-boundary compliance
+
+Test PASS alone is not Done.
+
+## 17. Review history
+
+- 2026-09-06 v1.0: owner mandatory-review intent.
+- #353: self-arbitration, company default-deny, tool SPOF, shadow governance -> v1.1.
+- #354: solo arbitration deadlock, break-glass pre-design ambiguity -> v1.2.
+- #355: severity calibration, personal tie-break deadlock, Category A/B gaming, TDD review overhead, substitute capability, solo break-glass gaps -> v1.3.
+- Adopted/modified rather than blindly copied: AGY raw severity no longer directly defines release blocking; personal owner can consciously waive a reviewed risk but must record it as risk acceptance, not pretend it was a false positive.
