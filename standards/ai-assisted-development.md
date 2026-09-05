@@ -1,11 +1,11 @@
 # AI-assisted Development Standard
 
 - status: `draft`
-- version: `0.4`
+- version: `0.5`
 - baseline_date: `2026-09-06`
 - scope: `AI assistants / coding agents / review agents`
 - operating_model: [`../OPERATING_MODEL.md`](../OPERATING_MODEL.md)
-- mandatory_review_policy: [`../REVIEW_POLICY.md`](../REVIEW_POLICY.md) `approved v1.1`
+- mandatory_review_policy: [`../REVIEW_POLICY.md`](../REVIEW_POLICY.md) `approved v1.2`
 
 ## 목적
 
@@ -27,8 +27,6 @@ latest user instruction
 -> AI proposal
 ```
 
-과거 대화 기억보다 repository와 현재 실행 증거를 우선한다.
-
 ## AI-003 — AI가 requirement를 발명하지 않는다 — MUST
 
 부족한 요구를 근거에서 추론할 수는 있지만 `INFERRED` 또는 assumption으로 표시한다. business policy, authorization entitlement, retention, SLA/SLO 수치, destructive migration semantics 등을 근거 없이 확정하지 않는다.
@@ -41,9 +39,9 @@ HIGH-risk 작업은 단일 AI 판단만으로 실행/merge하지 않는다. 프�
 
 `REVIEW_POLICY.md`가 정의한 substantive engineering change는 완료/merge/release 전에 independent final review가 필요하다.
 
-- **Personal / explicitly AGY-authorized environment:** AGY/Gemini final review MUST
-- **MEDIUM/HIGH personal / explicitly AGY-authorized environment:** AGY/Gemini design review MUST + final review MUST
-- **Company/client project:** independent review MUST. 외부/개인 AGY는 DEFAULT DENY이며, 명시적으로 승인된 service/repository/data classification 범위에서만 사용한다.
+- **Personal / explicitly AGY-authorized:** AGY/Gemini final review MUST
+- **MEDIUM/HIGH personal / explicitly AGY-authorized:** AGY/Gemini design review MUST + final review MUST
+- **Company/client:** independent review MUST. 외부/개인 AGY는 DEFAULT DENY이며 명시적으로 승인된 범위에서만 사용한다.
 - 회사에서 AGY가 승인되지 않았으면 `AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA`를 기록하고 company-approved human/internal-AI reviewer를 사용한다.
 
 ## AI-006 — 독립 review는 실제로 독립적이어야 한다 — MUST
@@ -53,34 +51,30 @@ HIGH-risk 작업은 단일 AI 판단만으로 실행/merge하지 않는다. 프�
 ```text
 original requirement / acceptance / constraints
 + exact draft, commit or diff
-+ 필요한 architecture/context
++ required architecture/context
 + deterministic verification evidence
 ```
 
 implementation agent의 결론이나 예상 finding을 정답처럼 먼저 주입하지 않는다.
 
-## AI-007 — AGY/Gemini finding은 자동 정답이 아니다 — MUST
+## AI-007 — AI finding은 자동 정답이 아니다 — MUST
 
 finding은 `ACCEPTED / MODIFIED / REJECTED / DEFERRED`로 reconciliation한다.
 
-단, AGY가 `BLOCKER` 또는 `MAJOR`로 분류한 finding은 구현자가 혼자 기각하거나 하향할 수 없다.
+AGY `BLOCKER/MAJOR`는 arbitration 전까지 `PENDING_BLOCKER/PENDING_MAJOR`로 blocking 처리한다.
 
-- personal: objective counter-evidence + implementation과 독립된 second reviewer + owner disposition
-- company/client: objective counter-evidence + human peer/tech lead/security owner/designated reviewer concurrence + project policy
+### Directly falsifiable finding
 
-AGY BLOCKER/MAJOR는 arbitration 전까지 pending blocking item으로 취급한다.
+같은 조건의 deterministic test/reproduction, 정확한 현재 official docs, 직접 runtime evidence 또는 명시적 contract가 finding의 핵심 전제를 **직접 반증**하면 owner가 evidence를 기록하고 기각/하향할 수 있다. 이 경우 AI hallucination을 다시 AI에게 승인받는 ceremony를 강제하지 않는다.
 
-판정 우선순위:
+### Interpretive / risk / design finding
 
-```text
-law/contract/company/project policy
-> runtime/test/reproduction evidence
-> current official docs/standards
-> project requirement/architecture evidence
-> reputable engineering practice
-> AGY/Gemini finding
-> implementation agent self-claim
-```
+객관적 evidence가 하나의 결론을 강제하지 않는 architecture/security/concurrency/operability/requirement-risk finding은 구현자가 단독 기각·하향할 수 없다.
+
+- personal: counter-evidence + fresh-context independent reviewer + owner disposition record
+- company/client: counter-evidence + appropriate human peer/lead/security/designated reviewer concurrence + project policy
+
+자동 linter/test/scanner는 evidence이지 semantic reviewer가 아니다.
 
 ## AI-008 — 제품명보다 capability profile을 먼저 정의한다 — SHOULD
 
@@ -100,7 +94,7 @@ law/contract/company/project policy
 
 ## AI-011 — AI가 제안한 dependency/package는 실제 존재와 출처를 확인한다 — MUST before adoption
 
-Maven/npm/PyPI 등 third-party package는 공식 registry/vendor/source의 실제 존재, package owner, 유지보수/지원 상태, license/security risk를 확인한다.
+Maven/npm/PyPI 등 third-party package는 공식 registry/vendor/source의 실제 존재, owner, 유지보수/지원 상태, license/security risk를 확인한다.
 
 ## AI-012 — 외부 사실은 최신 공식 source를 우선한다 — SHOULD
 
@@ -108,13 +102,13 @@ version-dependent CLI/framework/security behavior는 모델 기억보다 현재 
 
 ## AI-013 — 회사/고객 데이터의 외부 AI 전송은 DEFAULT DENY — MUST
 
-회사·고객 source, diff, schema, design, log, API contract, 내부 정보, 개인정보, 기밀정보 또는 파생정보를 개인 Synology AGY나 승인되지 않은 외부 AI에 보내지 않는다.
+회사·고객 source, diff, schema, design, log, API/internal context, 개인정보, 기밀정보 또는 non-public derived context를 개인 Synology AGY나 승인되지 않은 외부 AI에 보내지 않는다.
 
-명시적 organizational/contractual authorization이 확인된 경우에만 승인 범위 안에서 사용한다. 승인 여부가 불명확하면 `AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA`로 처리한다.
+독립적으로 작성 가능한 일반 기술 질문은 가능할 수 있지만, company-specific code/constraints/sequence/data shape를 역추론할 수 있는 detail이 섞이면 derived context로 취급한다. 불확실하면 외부로 보내지 않는다.
 
 ## AI-014 — 민감정보를 prompt/context에 불필요하게 넣지 않는다 — MUST
 
-credential, 개인정보, 기밀정보는 승인된 환경에서도 최소 범위로 사용한다.
+승인된 환경에서도 credential, 개인정보, 기밀정보는 최소 범위로 사용한다.
 
 ## AI-015 — 생성 속도보다 변경 규모를 통제한다 — SHOULD
 
@@ -125,12 +119,11 @@ AI가 빠르게 많은 파일을 만들 수 있다는 이유로 큰 변경을 �
 다음을 구분한다.
 
 - 작성함
-- 정적 검토함
 - 테스트를 만들었음
 - 테스트를 실행함
 - runtime에서 확인함
 - independent review를 실행함
-- review findings를 arbitration/reconciliation함
+- finding을 arbitration/reconciliation함
 - 배포함
 
 ## 기본 workflow
@@ -150,6 +143,8 @@ AI가 빠르게 많은 파일을 만들 수 있다는 이유로 큰 변경을 �
 12. document evidence and residual risk
 ```
 
+Break-glass에서는 `REVIEW_POLICY.md`에 따라 pre-design review와 final review를 모두 명시적으로 defer할 수 있으나 review owner/due와 post-release review를 남긴다.
+
 회사 프로젝트에서는 개인 workflow를 별도 shadow process로 만들지 않고 기존 ticket/PR/CI/security/change-management artifact에 mapping한다.
 
 ## Review record
@@ -157,4 +152,4 @@ AI가 빠르게 많은 파일을 만들 수 있다는 이유로 큰 변경을 �
 - 2026-09-06: Initial draft.
 - 2026-09-06: AGY/Gemini #351 selectively reconciled.
 - 2026-09-06: Owner made independent review mandatory.
-- 2026-09-06: AGY/Gemini #353 governance findings incorporated into REVIEW_POLICY v1.1: self-arbitration guard, default-deny company data boundary, company tool-failure fallback and shadow-governance constraint.
+- 2026-09-06: AGY/Gemini #353/#354 governance findings selectively incorporated into REVIEW_POLICY v1.2.
