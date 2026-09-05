@@ -1,7 +1,7 @@
 # Secure Development Standard
 
-- status: `draft`
-- version: `0.2`
+- status: `independently-reviewed draft`
+- version: `0.3`
 - baseline_date: `2026-09-06`
 - primary_reference: `NIST SP 800-218 SSDF v1.1`
 - web_verification_reference: `OWASP ASVS 5.0.0`
@@ -40,6 +40,12 @@ client가 전달한 user ID/role만으로 권한을 결정하지 않는다.
 이미 외부에 노출된 credential/secret은 단순 파일 삭제로 해결됐다고 보지 않는다.
 
 **MUST:** 해당 값을 `compromised`로 취급하고 secret 종류와 운영 제약에 맞게 가능한 한 신속히 **revoke / rotate / invalidate**하며, 접근 로그나 audit evidence가 있으면 오용 여부를 확인한다.
+
+### Incident evidence preservation
+
+credential invalidation 때문에 관련 session/telemetry/audit evidence가 사라질 가능성이 있고, **노출 지속 시간을 의미 있게 늘리지 않고** 보존할 수 있다면 revoke/rotation 직전 또는 병행하여 필요한 audit/access evidence를 snapshot/export/preserve한다.
+
+**MUST NOT:** 포렌식 보존을 이유로 compromised credential의 containment를 불필요하게 지연한다.
 
 직접 회전할 수 없는 종류라면 project/security incident 절차에 따라 대체 containment를 기록한다.
 
@@ -142,4 +148,5 @@ OWASP ASVS 5.0.0을 모든 웹 프로젝트에 통째로 강제하지 않는다.
 
 - 2026-09-06: ChatGPT initial draft.
 - 2026-09-06: AGY/Gemini #351 review received.
-- 2026-09-06: Accepted secret-compromise hardening and CSRF-context clarification after checking current official Spring Security docs. Rejected an unconditional stateless-bearer shortcut; the rule now follows browser/client threat context instead.
+- 2026-09-06: Accepted secret-compromise hardening and CSRF-context clarification after checking current official Spring Security docs. Rejected an unconditional stateless-bearer shortcut; the rule follows browser/client threat context instead.
+- 2026-09-06: Final AGY/Gemini #352 verdict `READY_FOR_REVIEWED`; forensic-evidence preservation was added with an explicit non-delay containment rule.
