@@ -1,28 +1,44 @@
 # Engineering Lifecycle
 
-- Status: **draft**
-- Baseline date: **2026-09-06**
+- status: `draft index`
+- baseline_date: `2026-09-06`
 
-이 디렉터리는 코딩 이전과 이후를 포함한 전체 software delivery lifecycle 기준을 정의합니다.
+코딩 이전과 이후를 포함한 전체 software delivery lifecycle 기준이다.
 
-초기 구조:
+## Current baseline
 
-1. `00-intake-and-scope.md` — 문제 정의, 이해관계자, scope/out-of-scope, source
-2. `01-planning.md` — 일정, 위험, 비용, dependency, readiness
-3. `02-requirements.md` — functional/security/data/ops/NFR, acceptance, traceability
-4. `03-design-and-architecture.md` — context, component, interface, data, trust boundary, failure mode, ADR
-5. `04-implementation.md` — code change discipline, error handling, observability, testability
-6. `05-verification-and-testing.md` — verification, test strategy, evidence
-7. `06-review-and-security.md` — correctness, security, maintainability, independent review
-8. `07-validation-and-acceptance.md` — 사용자/업무 목적 충족 여부와 검수
-9. `08-release-and-operation.md` — deployment, rollback, health, monitoring
-10. `09-retrospective-and-improvement.md` — defect/incident learning, reusable rule extraction
+1. [`00-engineering-lifecycle.md`](00-engineering-lifecycle.md) — 전체 lifecycle, tailoring, gate
+2. [`01-requirements.md`](01-requirements.md) — source, requirement, acceptance, traceability, readiness
+3. [`02-architecture-and-design.md`](02-architecture-and-design.md) — stakeholder/concern, component/interface/data/trust/failure/ADR
+
+구현·테스트·보안·리뷰는 [`../standards/`](../standards/)의 reusable standard를 사용한다.
+
+검수 gate는 [`../checklists/definition-of-ready.md`](../checklists/definition-of-ready.md)와 [`../checklists/definition-of-done.md`](../checklists/definition-of-done.md)를 사용한다.
+
+## Lifecycle
+
+```text
+DISCOVER
+-> DEFINE
+-> REQUIREMENTS
+-> DESIGN
+-> PLAN
+-> IMPLEMENT
+-> VERIFY
+-> REVIEW
+-> VALIDATE
+-> RELEASE
+-> OPERATE
+-> LEARN
+```
 
 ## Core distinction
 
 - **Verification:** 설계·요구사항대로 제대로 만들었는가?
 - **Validation:** 실제 필요한 것을 만든 것이 맞는가?
 
-두 개를 동일한 의미로 사용하지 않습니다.
+두 개를 동일한 의미로 사용하지 않는다.
 
-각 상세 문서는 공식 표준과 기존 개인 workflow를 검토한 뒤 `draft -> reviewed -> approved` 순서로 작성합니다.
+## Future expansion
+
+필요가 확인되면 release/operation/retrospective를 별도 상세 문서로 분리한다. 문서 구조를 먼저 늘리지 않고 실제 반복 규칙이 생길 때 확장한다.
