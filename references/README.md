@@ -1,6 +1,6 @@
 # References
 
-- status: `draft`
+- status: `reviewed reference index`
 - baseline_date: `2026-09-06`
 
 이 디렉터리는 handbook 규칙의 근거가 되는 공개·신뢰 가능한 출처와 현재 사용 버전을 기록한다.
@@ -23,6 +23,7 @@
 
 | Area | Baseline | Status / use |
 |---|---|---|
+| Normative keywords | RFC 2119 + RFC 8174 / BCP 14 | uppercase MUST/SHOULD/MAY interpretation |
 | Software lifecycle | ISO/IEC/IEEE 12207:2026 | current published lifecycle framework |
 | Requirements | ISO/IEC/IEEE 29148:2018 | current; ISO page notes confirmation in 2024 |
 | Architecture description | ISO/IEC/IEEE 42010:2022 | current architecture-description baseline |
@@ -30,12 +31,14 @@
 | Secure development | NIST SP 800-218 SSDF v1.1 | final normative baseline |
 | SSDF next revision | NIST SP 800-218 Rev.1 / SSDF v1.2 | draft; informative only until final |
 | AI/model secure development | NIST SP 800-218A | final; informative where AI model development is relevant |
-| Web application security verification | OWASP ASVS 5.0.0 | latest stable baseline |
+| Web application security verification | OWASP ASVS 5.0.0 | stable baseline used selectively by risk |
 | Testing | ISTQB CTFL syllabus v4.0.1 | practical public testing vocabulary/concepts |
 | Code review | Google Engineering Practices | public practical reference, not mandatory standard |
 
 ## Official links
 
+- RFC 2119: https://www.rfc-editor.org/info/rfc2119
+- RFC 8174: https://www.rfc-editor.org/info/rfc8174
 - ISO/IEC/IEEE 12207:2026: https://www.iso.org/standard/90219.html
 - ISO/IEC/IEEE 29148:2018: https://www.iso.org/standard/72089.html
 - ISO/IEC/IEEE 42010:2022: https://www.iso.org/standard/74393.html
@@ -52,7 +55,6 @@
 구체적인 코딩 규칙은 해당 프로젝트의 실제 version에 맞는 공식 문서를 우선한다.
 
 예:
-
 - Java: https://docs.oracle.com/en/java/
 - Spring Framework: https://docs.spring.io/spring-framework/reference/
 - Spring Security: https://docs.spring.io/spring-security/reference/
@@ -67,9 +69,14 @@
 - 공개 ISO abstract/meta information과 독립적으로 정리한 적용 원칙만 기록한다.
 - 공개 standard/framework 문서도 긴 원문 복사 대신 링크와 독립 요약을 사용한다.
 - draft 표준을 final처럼 표현하지 않는다.
-- version-sensitive rule은 `last_verified` 또는 review date를 남기고 구현 시 다시 공식 문서를 확인한다.
+- version-sensitive rule은 review date를 남기고 구현 시 다시 공식 문서를 확인한다.
+
+## Independent review evidence
+
+- AGY/Gemini Review A: `device-control#350`, workflow `33995782549`, AGY `1.1.27`, read-only PASS
+- AGY/Gemini Review B: `device-control#351`, workflow `33995799754`, AGY `1.1.27`, read-only PASS
+- Reconciliation record: [`../reviews/2026-09-06-initial-agy-gemini-review.md`](../reviews/2026-09-06-initial-agy-gemini-review.md)
 
 ## Review record
 
-- 2026-09-06: ChatGPT verified current public status/versions against official sources.
-- Independent AGY/Gemini review: pending.
+- 2026-09-06: ChatGPT verified public status/versions against official sources and reconciled AGY findings with framework documentation where applicable.
