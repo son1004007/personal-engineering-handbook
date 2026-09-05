@@ -1,11 +1,12 @@
 # Operating Model
 
 - status: `independently-reviewed draft`
-- version: `0.3`
+- version: `0.4`
 - baseline_date: `2026-09-06`
 - review_inputs: `AGY/Gemini issues #350, #352`
+- mandatory_review_policy: [`REVIEW_POLICY.md`](REVIEW_POLICY.md) `approved v1.0`
 
-이 문서는 handbook 규칙을 실제 작업에 적용할 때 필요한 공통 해석 기준을 정의한다. 개인 handbook이 불필요한 절차 장벽이 되지 않도록 **운영 모드, 위험 등급, 규범 키워드, inference 경계와 긴급 변경 경로**를 명시한다.
+이 문서는 handbook 규칙을 실제 작업에 적용할 때 필요한 공통 해석 기준을 정의한다. **문서·산출물의 깊이는 위험에 비례해 조절하지만, substantive engineering change의 독립 review 자체는 `REVIEW_POLICY.md`에 따라 필수**다.
 
 ## 1. Normative keywords
 
@@ -28,23 +29,10 @@ Official references:
 개인 프로젝트, 독립 작업 또는 본인이 최종 책임자인 작업.
 
 - 작성자 본인이 최종 승인할 수 있다.
-- MEDIUM 변경은 deterministic verification을 기본으로 하고, ambiguity가 높으면 독립 AI review 또는 fresh-eyes self-review를 추가한다.
-- HIGH 변경은 가능한 경우 implementation context와 분리된 independent reviewer를 추가한다.
-- 독립 human reviewer가 없더라도 개인 작업을 무기한 차단하지 않지만, HIGH-risk self-approval은 아래 최소 evidence bundle을 충족해야 한다.
-
-#### HIGH-risk solo self-approval minimum evidence — MUST
-
-해당 위험에 직접 관련된 항목만 선택하되 최소한 다음 범주를 모두 다룬다.
-
-1. **Risk statement** — 무엇이 잘못될 수 있고 blast radius가 무엇인지 명시
-2. **Deterministic verification** — 핵심 위험을 직접 검증하는 test/static check/runtime probe 중 적절한 evidence
-3. **Failure/recovery evidence** — destructive/migration/state change라면 rollback, restore, disable 또는 forward-fix 가능성을 실제 가능한 수준에서 확인
-4. **Independent semantic review** — 가능한 경우 분리된 AI/model/context 또는 다른 reviewer로 second opinion; 불가능하면 그 사실과 fresh-eyes self-review 결과를 기록
-5. **Residual risk / decision** — 검증하지 못한 범위와 왜 진행 가능한지 명시
-
-모든 HIGH-risk 변경에 동일한 negative-test suite나 migration dry-run을 기계적으로 요구하지 않는다. **위험 유형에 직접 대응하는 evidence**가 핵심이다.
-
-회사·고객 정책이 human separation-of-duties를 요구하면 이 solo fallback을 사용할 수 없다.
+- **Substantive engineering change는 LOW/MEDIUM/HIGH와 무관하게 최종 AGY/Gemini independent review를 MUST 수행한다.** 정확한 대상과 예외는 `REVIEW_POLICY.md`를 따른다.
+- MEDIUM/HIGH의 architecture/security/data/operation 결정은 구현 전에 별도 AGY/Gemini design review를 MUST 수행한다.
+- AGY/Gemini finding은 자동 정답이 아니며 `ACCEPTED / MODIFIED / REJECTED / DEFERRED`로 reconciliation한다.
+- tool/runtime failure로 review가 끝나지 않으면 정상 경로에서는 `Done`으로 표시하지 않는다.
 
 ### Team / organization mode
 
@@ -52,23 +40,28 @@ Official references:
 
 - 프로젝트의 실제 review/approval policy가 이 handbook보다 우선한다.
 - separation of duties, reviewer 지정, change approval이 요구되면 그대로 따른다.
+- **AGY/Gemini review는 회사·고객 정책상 허용되는 데이터 경계 안에서 추가 quality gate로 사용한다.**
+- 외부 AI 제공이 금지된 source/설계/로그를 개인 AGY 환경으로 반출하지 않는다.
+- AGY가 상위 정책상 금지되면 `AGY_NOT_PERMITTED_BY_POLICY`를 기록하고 프로젝트가 허용한 독립 reviewer로 대체한다.
 - 개인 handbook을 근거로 조직의 승인 절차를 축소하지 않는다.
 
 ## 3. Risk tiers
 
-문서와 review 깊이는 `코드 줄 수`보다 실패 영향으로 결정한다.
+위험등급은 **review 실행 여부가 아니라 review·문서·검증의 깊이**를 결정한다.
 
 ### LOW — routine / reversible
 
 예:
-- 오탈자/문서
-- 작은 read-only 변경
+- 작은 read-only behavior 변경
 - 국소 refactoring
 - 영향이 제한적이고 즉시 되돌릴 수 있는 수정
 
 기본 evidence:
 - 목적/변경 내용
 - 필요한 기본 검증
+- substantive change라면 final AGY/Gemini review
+
+실행 동작·업무 의미·검증 기준을 전혀 바꾸지 않는 오탈자/format/link-only 변경은 `REVIEW_POLICY.md`에 따라 non-substantive로 review를 생략할 수 있다.
 
 ### MEDIUM — meaningful behavior change
 
@@ -87,6 +80,8 @@ Official references:
 - 변경 결정
 - Verification evidence
 - 필요한 rollback note
+- 사전 AGY/Gemini design review
+- 최종 AGY/Gemini diff/change review
 
 `SRC-###`, `FR/SEC/DATA/...` ID는 traceability가 실제 가치를 줄 때만 사용한다. MEDIUM이라는 이유만으로 모든 ID를 강제하지 않는다.
 
@@ -107,7 +102,8 @@ Official references:
 - architecture/security/data decision
 - threat/risk review
 - migration/rollback 또는 forward-fix 전략
-- risk-appropriate independent review
+- **사전 AGY/Gemini design review + 최종 AGY/Gemini change review**
+- 프로젝트가 요구하는 human/SoD review
 - acceptance/release evidence
 
 ## 4. `Important`의 기본 판정
@@ -153,14 +149,14 @@ AI/engineer가 다음을 **근거와 함께 `INFERRED`로 표시**하여 진행�
 ## 6. Verification / Review / Validation 경계
 
 - **VERIFY:** 기술 specification/contract에 맞게 구현됐는지 테스트·정적 분석·runtime probe 등으로 확인. Evidence: 실행 결과.
-- **REVIEW:** 사람이 읽는 의미 수준 또는 독립 AI가 correctness, simplicity, security, unintended effects를 검사. Evidence: findings/approval record.
+- **REVIEW:** implementation과 독립된 관점에서 correctness, simplicity, security, data/operation risk, unintended effects를 검사. **AGY/Gemini mandatory gate는 `REVIEW_POLICY.md`가 정의한다.** Evidence: findings + reconciliation record.
 - **VALIDATE:** 사용자·업무 목적과 acceptance criteria를 실제 시나리오에서 충족하는지 확인. Evidence: acceptance result.
 
 순서는 작업 특성에 따라 반복될 수 있으며 waterfall gate로 해석하지 않는다.
 
 ## 7. Break-glass / Fast-track
 
-운영 장애, active security incident, 데이터 손상 확대 등 즉시 containment가 더 중요한 경우 일반 DoR를 축약할 수 있다.
+운영 장애, active security incident, 데이터 손상 확대 등 즉시 containment가 더 중요한 경우 일반 DoR와 사전 review를 축약할 수 있다.
 
 ```text
 TRIAGE
@@ -168,6 +164,7 @@ TRIAGE
 -> BOUNDED VERIFY
 -> EXPEDITED RELEASE
 -> MONITOR
+-> MANDATORY AGY/approved-independent REVIEW
 -> RETRO / RECONCILE
 ```
 
@@ -177,7 +174,9 @@ TRIAGE
 - blast radius를 줄이는 최소 변경을 우선한다.
 - 가능한 bounded verification을 수행한다.
 - rollback/disable 방법을 가능한 경우 확보한다.
-- 정상화 후 생략된 requirement/test/doc/review를 **프로젝트가 정한 합리적인 시점에** backfill하고 재발 방지 여부를 판단한다.
+- 사전 AGY review를 생략했다면 `REVIEW_DEFERRED_BREAK_GLASS`로 명시한다.
+- 정상화 후 AGY/허용된 독립 review와 finding reconciliation을 수행한다.
+- 생략된 requirement/test/doc/review를 프로젝트가 정한 합리적인 시점에 backfill하고 재발 방지 여부를 판단한다.
 
 임의의 24시간/48시간 같은 고정 시간을 이 handbook이 전역 규칙으로 강제하지 않는다.
 
@@ -189,15 +188,16 @@ TRIAGE
 - 모든 요구사항에 ID 부여
 - 모든 quality characteristic 측정
 - 모든 테스트 레벨 생성
-- 모든 개인 작업에 외부 human reviewer 대기
 - 모든 endpoint에 별도 계층/interface/factory 생성
 - HIGH-risk라는 이유만으로 위험과 무관한 모든 검증 도구를 실행
+- AGY가 제안했다는 이유만으로 모든 finding을 구현
 
-handbook의 목적은 **판단 품질과 증거 품질을 높이는 것**이지 산출물 개수를 늘리는 것이 아니다.
+**리뷰는 필수지만 산출물과 수정은 위험·근거에 비례한다.**
 
 ## Review record
 
 - 2026-09-06: ChatGPT initial operating model.
 - 2026-09-06: AGY/Gemini #350 findings incorporated selectively: solo/team mode, risk-tier simplification, inference boundary, break-glass path, BCP14 vocabulary, VERIFY/REVIEW/VALIDATE separation.
 - 2026-09-06: Fixed 24–48 hour incident backfill suggestion rejected because it lacks a universal policy basis.
-- 2026-09-06: Final AGY/Gemini #352 verdict `READY_FOR_REVIEWED`, no BLOCKER. Added explicit HIGH-risk solo fallback evidence bundle without mandating irrelevant test types.
+- 2026-09-06: Final AGY/Gemini #352 verdict `READY_FOR_REVIEWED`, no BLOCKER.
+- 2026-09-06: Owner explicitly restored stronger original intent for use in company projects: AGY/Gemini independent review is mandatory for substantive changes, while findings remain subject to evidence-based reconciliation.
