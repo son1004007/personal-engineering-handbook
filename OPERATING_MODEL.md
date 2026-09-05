@@ -1,10 +1,10 @@
 # Operating Model
 
 - status: `independently-reviewed draft`
-- version: `0.4`
+- version: `0.5`
 - baseline_date: `2026-09-06`
-- review_inputs: `AGY/Gemini issues #350, #352`
-- mandatory_review_policy: [`REVIEW_POLICY.md`](REVIEW_POLICY.md) `approved v1.0`
+- review_inputs: `AGY/Gemini issues #350, #352, #353`
+- mandatory_review_policy: [`REVIEW_POLICY.md`](REVIEW_POLICY.md) `approved v1.1`
 
 이 문서는 handbook 규칙을 실제 작업에 적용할 때 필요한 공통 해석 기준을 정의한다. **문서·산출물의 깊이는 위험에 비례해 조절하지만, substantive engineering change의 독립 review 자체는 `REVIEW_POLICY.md`에 따라 필수**다.
 
@@ -29,10 +29,11 @@ Official references:
 개인 프로젝트, 독립 작업 또는 본인이 최종 책임자인 작업.
 
 - 작성자 본인이 최종 승인할 수 있다.
-- **Substantive engineering change는 LOW/MEDIUM/HIGH와 무관하게 최종 AGY/Gemini independent review를 MUST 수행한다.** 정확한 대상과 예외는 `REVIEW_POLICY.md`를 따른다.
-- MEDIUM/HIGH의 architecture/security/data/operation 결정은 구현 전에 별도 AGY/Gemini design review를 MUST 수행한다.
-- AGY/Gemini finding은 자동 정답이 아니며 `ACCEPTED / MODIFIED / REJECTED / DEFERRED`로 reconciliation한다.
-- tool/runtime failure로 review가 끝나지 않으면 정상 경로에서는 `Done`으로 표시하지 않는다.
+- **Substantive engineering change는 LOW/MEDIUM/HIGH와 무관하게 최종 AGY/Gemini independent review를 MUST 수행한다.**
+- MEDIUM/HIGH의 architecture/security/data/operation 결정은 구현 전에 AGY/Gemini design review를 MUST 수행한다.
+- AGY/Gemini finding은 자동 정답이 아니며 evidence-based reconciliation을 수행한다.
+- AGY BLOCKER/MAJOR의 기각·하향에는 `REVIEW_POLICY.md`의 객관적 arbitration 규칙을 따른다.
+- tool/runtime failure로 review가 끝나지 않으면 정상 경로에서는 `Done`으로 표시하지 않는다. 단, owner가 별도 independent reviewer를 명시적으로 승인한 경우 substitute evidence를 남길 수 있다.
 
 ### Team / organization mode
 
@@ -40,9 +41,11 @@ Official references:
 
 - 프로젝트의 실제 review/approval policy가 이 handbook보다 우선한다.
 - separation of duties, reviewer 지정, change approval이 요구되면 그대로 따른다.
-- **AGY/Gemini review는 회사·고객 정책상 허용되는 데이터 경계 안에서 추가 quality gate로 사용한다.**
-- 외부 AI 제공이 금지된 source/설계/로그를 개인 AGY 환경으로 반출하지 않는다.
-- AGY가 상위 정책상 금지되면 `AGY_NOT_PERMITTED_BY_POLICY`를 기록하고 프로젝트가 허용한 독립 reviewer로 대체한다.
+- **외부/개인 AGY는 DEFAULT DENY**다. 회사·고객이 해당 service/endpoint, repository와 data classification을 명시적으로 허용한 경우에만 사용한다.
+- 명시적 허용이 없으면 `AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA`로 기록하고 회사가 승인한 human peer / tech lead / security reviewer / internal AI로 독립 review를 수행한다.
+- 개인 Synology AGY bridge가 회사 프로젝트 데이터에 대해 승인되었다고 가정하지 않는다.
+- 회사 프로젝트에서 AGY BLOCKER/MAJOR를 기각·하향하려면 객관적 counter-evidence와 human peer/lead/security owner의 명시적 동의가 필요하다.
+- 이 handbook을 별도 shadow governance로 만들지 않고 기존 ticket/PR/CI/security/change-management 절차에 mapping한다.
 - 개인 handbook을 근거로 조직의 승인 절차를 축소하지 않는다.
 
 ## 3. Risk tiers
@@ -59,7 +62,8 @@ Official references:
 기본 evidence:
 - 목적/변경 내용
 - 필요한 기본 검증
-- substantive change라면 final AGY/Gemini review
+- 개인/AGY-authorized 환경: final AGY/Gemini review
+- 회사 환경: 회사 승인 독립 reviewer 또는 명시적으로 승인된 AGY/Gemini review
 
 실행 동작·업무 의미·검증 기준을 전혀 바꾸지 않는 오탈자/format/link-only 변경은 `REVIEW_POLICY.md`에 따라 non-substantive로 review를 생략할 수 있다.
 
@@ -80,8 +84,10 @@ Official references:
 - 변경 결정
 - Verification evidence
 - 필요한 rollback note
-- 사전 AGY/Gemini design review
-- 최종 AGY/Gemini diff/change review
+- 사전 independent design review
+- 최종 independent diff/change review
+
+개인/AGY-authorized 환경에서는 AGY/Gemini를 사용한다. 회사 환경에서는 승인된 reviewer 경계를 따른다.
 
 `SRC-###`, `FR/SEC/DATA/...` ID는 traceability가 실제 가치를 줄 때만 사용한다. MEDIUM이라는 이유만으로 모든 ID를 강제하지 않는다.
 
@@ -102,9 +108,12 @@ Official references:
 - architecture/security/data decision
 - threat/risk review
 - migration/rollback 또는 forward-fix 전략
-- **사전 AGY/Gemini design review + 최종 AGY/Gemini change review**
+- 사전 independent design/security review
+- 최종 independent change review
 - 프로젝트가 요구하는 human/SoD review
 - acceptance/release evidence
+
+개인/AGY-authorized 환경에서는 AGY/Gemini를 mandatory reviewer로 사용한다. 회사 환경에서는 승인된 reviewer와 공식 risk-acceptance 절차를 우선한다.
 
 ## 4. `Important`의 기본 판정
 
@@ -149,7 +158,7 @@ AI/engineer가 다음을 **근거와 함께 `INFERRED`로 표시**하여 진행�
 ## 6. Verification / Review / Validation 경계
 
 - **VERIFY:** 기술 specification/contract에 맞게 구현됐는지 테스트·정적 분석·runtime probe 등으로 확인. Evidence: 실행 결과.
-- **REVIEW:** implementation과 독립된 관점에서 correctness, simplicity, security, data/operation risk, unintended effects를 검사. **AGY/Gemini mandatory gate는 `REVIEW_POLICY.md`가 정의한다.** Evidence: findings + reconciliation record.
+- **REVIEW:** implementation과 독립된 관점에서 correctness, simplicity, security, data/operation risk, unintended effects를 검사. Evidence: findings + arbitration/reconciliation record.
 - **VALIDATE:** 사용자·업무 목적과 acceptance criteria를 실제 시나리오에서 충족하는지 확인. Evidence: acceptance result.
 
 순서는 작업 특성에 따라 반복될 수 있으며 waterfall gate로 해석하지 않는다.
@@ -164,7 +173,7 @@ TRIAGE
 -> BOUNDED VERIFY
 -> EXPEDITED RELEASE
 -> MONITOR
--> MANDATORY AGY/approved-independent REVIEW
+-> MANDATORY INDEPENDENT REVIEW
 -> RETRO / RECONCILE
 ```
 
@@ -174,11 +183,14 @@ TRIAGE
 - blast radius를 줄이는 최소 변경을 우선한다.
 - 가능한 bounded verification을 수행한다.
 - rollback/disable 방법을 가능한 경우 확보한다.
-- 사전 AGY review를 생략했다면 `REVIEW_DEFERRED_BREAK_GLASS`로 명시한다.
-- 정상화 후 AGY/허용된 독립 review와 finding reconciliation을 수행한다.
-- 생략된 requirement/test/doc/review를 프로젝트가 정한 합리적인 시점에 backfill하고 재발 방지 여부를 판단한다.
+- 사전 review를 생략했다면 `REVIEW_DEFERRED_BREAK_GLASS`로 명시한다.
+- `review_owner`와 `review_due`를 기록한다.
+- 프로젝트 incident/change policy가 deadline을 정의하면 그것을 따른다.
+- 별도 정책이 없으면 open-ended defer를 허용하지 않고 concrete due point를 정한다.
+- 늦어도 incident/problem record 종료 또는 같은 영역의 다음 non-emergency production change 전에는 review/reconciliation을 끝낸다.
+- deferred review에서 production BLOCKER가 확인되면 exposure를 즉시 재평가하고 프로젝트 정책에 따라 containment/rollback/disable/forward-fix를 수행하며 human/security owner에게 escalation한다.
 
-임의의 24시간/48시간 같은 고정 시간을 이 handbook이 전역 규칙으로 강제하지 않는다.
+전역적으로 임의의 24시간/48시간 같은 숫자를 강제하지 않는다.
 
 ## 8. Overengineering 방지
 
@@ -191,13 +203,15 @@ TRIAGE
 - 모든 endpoint에 별도 계층/interface/factory 생성
 - HIGH-risk라는 이유만으로 위험과 무관한 모든 검증 도구를 실행
 - AGY가 제안했다는 이유만으로 모든 finding을 구현
+- 회사 프로젝트에 개인 11단계 workflow와 개인 AGY sign-off를 별도 조직 gate처럼 강제
 
-**리뷰는 필수지만 산출물과 수정은 위험·근거에 비례한다.**
+**리뷰는 필수지만 산출물과 수정은 위험·근거에 비례하며, 회사에서는 기존 governance에 mapping한다.**
 
 ## Review record
 
 - 2026-09-06: ChatGPT initial operating model.
 - 2026-09-06: AGY/Gemini #350 findings incorporated selectively: solo/team mode, risk-tier simplification, inference boundary, break-glass path, BCP14 vocabulary, VERIFY/REVIEW/VALIDATE separation.
 - 2026-09-06: Fixed 24–48 hour incident backfill suggestion rejected because it lacks a universal policy basis.
-- 2026-09-06: Final AGY/Gemini #352 verdict `READY_FOR_REVIEWED`, no BLOCKER.
-- 2026-09-06: Owner explicitly restored stronger original intent for use in company projects: AGY/Gemini independent review is mandatory for substantive changes, while findings remain subject to evidence-based reconciliation.
+- 2026-09-06: AGY/Gemini #352 verdict `READY_FOR_REVIEWED`, no BLOCKER for the prior risk-based baseline.
+- 2026-09-06: Owner restored mandatory independent-review intent.
+- 2026-09-06: AGY/Gemini #353 governance review rejected review-policy v1.0. Accepted/modified self-arbitration, default-deny company boundary, tool-outage fallback, break-glass remediation and shadow-governance findings into REVIEW_POLICY v1.1.
