@@ -1,12 +1,11 @@
 # Personal Engineering Handbook
 
-> Status: **independently reviewed baseline + approved mandatory review policy v1.1**  
-> Baseline date: **2026-09-06**  
-> Mandatory review policy: **approved by owner 2026-09-06**
+> Status: **independently reviewed baseline + approved mandatory review policy v1.2**  
+> Baseline date: **2026-09-06**
 
 개인적으로 사용하는 소프트웨어 엔지니어링 원칙, SDLC 기준, 개발 표준, 검토 체크리스트를 공개 가능한 형태로 정리하는 저장소입니다.
 
-이 저장소의 목적은 단순한 coding style 모음이 아닙니다. **개인 프로젝트뿐 아니라 회사·고객 프로젝트에서 내가 수행하는 작업 방식의 기본 골격으로 사용하되, 법률·계약·회사·고객·프로젝트 정책을 항상 우선합니다.**
+이 저장소는 단순 coding style 모음이 아니라 **개인 프로젝트와 회사·고객 프로젝트에서 내가 수행하는 작업 방식의 기본 골격**입니다. 단, 법률·계약·회사·고객·프로젝트 정책이 항상 우선합니다.
 
 ```text
 문제 정의
@@ -22,33 +21,45 @@
 -> operation / retrospective
 ```
 
-## Mandatory review — approved v1.1
+## Mandatory review — approved v1.2
 
 가장 먼저 [`REVIEW_POLICY.md`](REVIEW_POLICY.md)를 읽습니다.
 
-현재 owner-approved 기본값:
+### Personal / explicitly AGY-authorized
 
-- **Personal / explicitly AGY-authorized environment**
-  - substantive change: AGY/Gemini independent final review MUST
-  - MEDIUM/HIGH design: AGY/Gemini independent design review MUST
-- **Company/client environment**
-  - independent review MUST
-  - external/personal AGY is **DEFAULT DENY** until explicit authorization for service/repository/data classification is confirmed
-  - authorization이 없거나 불명확하면 `AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA` + company-approved human/internal-AI reviewer
-- AGY/Gemini finding은 자동 정답이 아니라 evidence-based reconciliation 대상
-- AGY BLOCKER/MAJOR는 구현자가 혼자 기각/하향할 수 없음
-  - personal: objective evidence + second independent reviewer + owner disposition
-  - company: objective evidence + human peer/tech lead/security owner/designated reviewer concurrence
-- break-glass는 review를 defer할 수 있지만 `review_owner`, `review_due`, post-release review/remediation을 반드시 남김
+- substantive change: **AGY/Gemini independent final review MUST**
+- MEDIUM/HIGH design: **AGY/Gemini design review MUST**
 
-즉 **문서량은 risk-based, independent review는 mandatory, 회사 데이터는 default-deny, 고위험 finding은 독립 arbitration**입니다.
+### Company/client
+
+- independent review: **MUST**
+- external/personal AGY: **DEFAULT DENY**
+- 명시적 service/repository/data-classification authorization이 확인된 경우에만 AGY 사용
+- 미확인/미승인: `AGY_NOT_AUTHORIZED_FOR_PROJECT_DATA` + company-approved human/internal-AI reviewer
+- current personal Synology AGY는 company data에 승인된 것으로 가정하지 않음
+
+### Findings are rebuttable, not authoritative
+
+AGY/Gemini finding은 자동 정답이 아닙니다.
+
+- `BLOCKER -> PENDING_BLOCKER`
+- `MAJOR -> PENDING_MAJOR`
+
+직접 반증 가능한 finding은 deterministic reproduction/test, exact-version official docs, direct runtime evidence 또는 explicit contract가 핵심 전제를 직접 반증하면 evidence 기반으로 기각/하향할 수 있습니다.
+
+반대로 architecture/security/risk/requirement ambiguity처럼 해석이 필요한 BLOCKER/MAJOR는 구현자가 혼자 무효화할 수 없습니다.
+
+- personal: independent second semantic reviewer 필요
+- company: human peer/tech lead/security/designated reviewer concurrence + project policy 필요
+
+즉 **AGY 의견을 무조건 수용하지 않지만, 불편하다는 이유로 임의 기각할 수도 없습니다.**
 
 ## Current baseline
 
 ### Operating / review model
 
-- [`REVIEW_POLICY.md`](REVIEW_POLICY.md) — **approved v1.1**, mandatory independent review, arbitration, company default-deny boundary
-- [`OPERATING_MODEL.md`](OPERATING_MODEL.md) — BCP14 vocabulary, Solo/Team, LOW/MEDIUM/HIGH risk tier, inference boundary, break-glass, anti-overengineering
+- [`REVIEW_POLICY.md`](REVIEW_POLICY.md) — **approved v1.2**
+- [`OPERATING_MODEL.md`](OPERATING_MODEL.md)
 
 ### Lifecycle
 
@@ -71,73 +82,60 @@
 - [`checklists/definition-of-ready.md`](checklists/definition-of-ready.md)
 - [`checklists/definition-of-done.md`](checklists/definition-of-done.md)
 
-### Review evidence
+## Company-data boundary
 
-- [`reviews/2026-09-06-initial-agy-gemini-review.md`](reviews/2026-09-06-initial-agy-gemini-review.md)
-- [`reviews/2026-09-06-final-agy-gemini-review.md`](reviews/2026-09-06-final-agy-gemini-review.md)
-- policy governance review: device-control Issue `#353`, run `33996776013`
+회사·고객 source/diff/schema/design/log/internal context/민감정보 또는 이를 재구성할 수 있는 derived context를 개인 Synology AGY, 개인 외부 AI, public GitHub로 보내는 것은 **명시적 authorization 전에는 금지**합니다.
+
+독립적으로 작성 가능한 일반 기술 질문은 가능할 수 있지만 company-specific non-public detail을 포함하거나 역추론할 수 있으면 외부로 보내지 않습니다.
+
+## Company adoption — no shadow governance
+
+회사 프로젝트에서는 handbook을 별도 병렬 process로 강제하지 않습니다.
+
+```text
+requirements/design -> existing ticket/design doc
+verification -> existing CI/test
+independent review -> PR reviewer/security review/approved internal AI
+reconciliation -> PR discussion/review record
+release -> existing change management
+```
+
+팀이 formal adoption하지 않았다면 **내 작업 품질을 높이는 개인 discipline**으로 사용합니다.
+
+## Break-glass
+
+active incident에서는 containment를 지연시키지 않기 위해 pre-design review와 final review를 모두 defer할 수 있습니다. 대신 `review_scope`, `review_owner`, `review_due`를 기록하고 post-release review/reconciliation을 반드시 완료합니다.
 
 ## Authority
 
 ```text
-사용자의 현재 명시적 지시
-> 법률 / 계약 / 고객 요구사항
-> 회사 정책 및 회사가 승인한 개발 표준
-> 현재 프로젝트의 명시적 요구사항과 AGENTS.md
-> 이 Personal Engineering Handbook의 approved 규칙
-> reviewed/draft handbook guidance
-> framework / language 일반 관례
-> AI의 자체 판단
+latest explicit user instruction
+> law / contract / client requirement
+> employer/project policy
+> approved handbook rules
+> reviewed/draft guidance
+> framework convention
+> AI preference
 ```
 
-## Public / company-data boundary
+## Public boundary
 
-이 저장소는 개인적으로 독립 작성한 일반 원칙만 공개합니다.
+회사/고객 source code, 내부 표준·템플릿·설계·운영자료, 내부 IP/URL/account/schema, 운영데이터, proprietary rule을 이 public repo에 복제하지 않습니다. 예시는 independently-created synthetic content를 사용합니다.
 
-- 회사 또는 고객사의 source code를 복제하지 않습니다.
-- 회사 내부 개발표준, 템플릿, 회의록, 설계서, 운영 절차를 복제하거나 재작성해 공개하지 않습니다.
-- 고객사명, 내부 IP/URL, 계정, schema/table 이름, 실제 운영 데이터와 비공개 architecture를 포함하지 않습니다.
-- 예시는 synthetic domain / synthetic data로 독립 작성합니다.
-- 이 저장소는 현재 또는 과거 고용주, 고객사의 공식 정책이 아닙니다.
+## Review evidence
 
-회사 프로젝트 내용을 개인 Synology AGY, 개인 외부 AI 또는 public GitHub로 보내는 것은 **명시적 organizational/contractual authorization이 확인되기 전에는 금지**합니다. 회사가 승인한 내부/enterprise AI가 있다면 그 승인 범위 안에서 사용합니다.
+2026-09-06에 AGY/Gemini 독립 governance review를 반복 수행했습니다.
 
-## Rule status
+- `#353`: v1.0 rejected — self-arbitration, company default-deny, tool SPOF, shadow governance 문제 발견
+- `#354`: v1.1 NOT_READY — solo arbitration deadlock, break-glass pre-design review ambiguity 및 기타 보완점 발견
+- 해당 finding은 무조건 수용하지 않고 evidence/applicability 기준으로 `ACCEPTED / MODIFIED / REJECTED`하여 v1.2에 반영
 
-- `draft`: 초안
-- `independently-reviewed draft` / `reviewed`: 독립 검토를 받았지만 owner 최종 승인 전
-- `approved`: owner가 개인 기본 engineering rule로 명시적으로 채택
-- `deprecated`: 신규 작업에 적용하지 않음
-- `superseded`: 새로운 문서가 대체
-
-현재 mandatory review policy는 approved v1.1이고, 나머지 baseline은 세부 검증·승인을 계속 진행합니다.
-
-## Review principle
-
-```text
-법률/계약/회사·프로젝트 정책
-> 실제 test / runtime evidence
-> current official standard / official vendor documentation
-> 프로젝트 요구/architecture evidence
-> 신뢰 가능한 engineering practice
-> AGY/Gemini 및 기타 독립 review
-> implementation agent의 자체 주장
-```
-
-AGY/Gemini review는 독립 검토 도구이며 절대 권위가 아닙니다. 그러나 BLOCKER/MAJOR를 구현자 혼자 무시할 수도 없습니다.
-
-## Company adoption
-
-회사 프로젝트에서는 이 handbook을 **별도 shadow governance로 만들지 않습니다.** 가능한 한 기존 ticket, design doc, PR, CI, security review, change-management에 이 기준을 mapping합니다. 팀이 formal adoption하지 않았다면 내 작업 품질을 높이는 개인 discipline으로 사용합니다.
-
-## References
-
-현재 기준 버전과 공식 링크는 [`references/README.md`](references/README.md)를 따릅니다.
+최신 최종 review 결과는 `reviews/`에 기록합니다.
 
 ## Global control
 
-Cross-repository AI 작업은 다음 전역 control을 먼저 따릅니다.
+Cross-repository AI 작업은:
 
 `son1004007/ai-agent-workflow-playbook/CONTROL.md`
 
-이 handbook은 engineering practice와 mandatory review policy의 Source of Truth이고, global control은 AI workflow / repository routing의 Source of Truth입니다.
+에서 시작합니다.
