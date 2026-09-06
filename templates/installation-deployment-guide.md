@@ -1,5 +1,15 @@
 # Installation / Build / Deployment Guide
 
+## Applicability
+- `APPLICABLE | MERGED | N/A BY ARCHITECTURE`
+- Rationale:
+
+## Release / Build Identity
+- Risk tier: `LOW | MEDIUM | HIGH`
+- Environment: `development | test | staging | production | other`
+- Commit SHA / tag / build-artifact ID:
+- HIGH-risk or production immutable anchor verified: `YES | NO | N/A`
+
 ## Supported Environment
 - OS/runtime:
 - Required software/version:
@@ -10,15 +20,20 @@
 - Secret handling:
 - Ports/endpoints:
 
-## Database
+## Database / Data Migration
 - Initialization:
-- Migration:
+- Migration execution order:
+- Compatibility:
+- Rollback / forward-fix:
 - Verification:
 
 ## Build
 ```bash
 # commands
 ```
+
+Expected result:
+- 
 
 ## Install / Deploy
 1. 
@@ -29,7 +44,9 @@
 ```
 
 ## Health / Smoke Verification
-- 
+- Command/probe:
+- Expected result:
+- Evidence reference:
 
 ## Upgrade
 - 
@@ -37,5 +54,5 @@
 ## Rollback / Disable / Recovery
 - 
 
-## Known Limitations
+## Known Limitations / NOT RUN / BLOCKED
 - 
