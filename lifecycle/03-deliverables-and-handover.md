@@ -1,10 +1,10 @@
 # Deliverables and Handover Standard
 
-- status: `draft`
-- version: `0.2`
+- status: `independently-reviewed draft`
+- version: `0.3`
 - baseline_date: `2026-09-06`
 - mandatory_review_policy: [`../REVIEW_POLICY.md`](../REVIEW_POLICY.md) `approved v1.4.1`
-- review_input: `AGY/Gemini device-control #359`
+- review_inputs: `AGY/Gemini device-control #359, #360`
 
 ## Purpose
 
@@ -126,6 +126,8 @@ Data classification declaration — MUST when data is persisted or transferred:
 - 없으면 최소 `public/synthetic`, `non-public`, `sensitive/personal`, `UNKNOWN` 중 적절한 상태를 명시
 - retention/deletion이 정의되지 않았다면 조용히 생략하지 말고 `N/A`, `UNKNOWN`, 또는 higher-policy reference로 표시
 
+`UNKNOWN`은 discovery/design 중에는 허용하지만, **release candidate에서 실제 persistent/transferred data의 handling, access, retention, external transfer 또는 security control에 영향을 주는 classification이 UNKNOWN이면 이를 해결하거나 해당 requirement/change를 `BLOCKED`/`DESCOPED_APPROVED`로 처리해야 한다.**
+
 Completion condition:
 - actual schema/data contract와 문서가 모순되지 않는다.
 - 주요 constraint/relationship/classification 상태를 추적할 수 있다.
@@ -153,7 +155,7 @@ Completion condition:
 - risk-relevant tests have execution evidence
 - source matches documented contracts
 - secret/internal data is not embedded
-- build/test evidence is anchored to a commit/tag/build artifact identifier when practical
+- build/test evidence is anchored to a commit/tag/build artifact identifier when practical; **HIGH-risk or production release evidence MUST be anchored to an immutable commit SHA, tag or build/artifact identifier**
 - substantive change has independent review evidence compliant with `REVIEW_POLICY.md`
 - AI review evidence includes severity calibration/reconciliation rather than treating raw AI labels as final authority
 - company/client review evidence confirms the reviewer/data path was authorized; personal/external AGY is not used merely to satisfy this deliverable when higher policy prohibits it
@@ -174,7 +176,7 @@ Minimum content when applicable:
 - upgrade compatibility note where relevant
 - rollback / disable / recovery path
 - known deployment limitations
-- deployment target anchored to commit/tag/build artifact/checksum when practical
+- deployment target anchored to commit/tag/build artifact/checksum when practical; **HIGH-risk or production deployment MUST identify the immutable release/build target**
 
 Completion condition:
 - 승인된 target/release artifact에 대해 재설치/재배포 절차와 verification 결과를 재현할 수 있거나 정확한 higher-policy procedure를 참조한다.
@@ -204,6 +206,8 @@ Completion condition:
 - **active calibrated BLOCKER가 남아 있는 normal release/handover를 이 문서에 기록했다는 이유만으로 허용하지 않는다.** `REVIEW_POLICY.md`의 release semantics가 항상 우선한다.
 
 `NOT RUN`/verification-`BLOCKED`는 상태를 숨기지 않기 위해 기록할 수 있지만, 해당 미검증이 release eligibility에 미치는 영향은 DoD/review/risk policy로 별도 판정한다.
+
+긴급 incident containment는 normal Done/release 예외가 아니라 `REVIEW_POLICY.md`의 **break-glass temporary deferral**을 따른다. break-glass 상태는 review debt와 due/owner가 닫히기 전 정상 Done/handover로 재분류하지 않는다.
 
 ## Traceability model
 
@@ -240,6 +244,12 @@ LOW-risk personal/small software may use a two-part physical structure:
 UI/DB/operation deliverable classes that do not exist may be `N/A BY ARCHITECTURE` with rationale.
 
 Medium/high-risk or long-lived company work should separate artifacts where separation improves review/ownership/operations.
+
+## Risk acceptance authority
+
+- personal project with no higher external obligation: the owner may accept a **calibrated MAJOR** according to `REVIEW_POLICY.md`, recording reason/impact/mitigation/revisit trigger.
+- company/client project: only a role/process authorized by the company/project may accept risk. This handbook does not grant a developer, AI, delivery team or handbook owner authority to waive company risk.
+- calibrated BLOCKER remains non-waivable in normal release.
 
 ## Change-to-deliverable mapping
 
