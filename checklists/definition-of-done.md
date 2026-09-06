@@ -1,11 +1,11 @@
 # Definition of Done
 
-- status: `draft`
-- version: `0.7`
+- status: `independently-reviewed draft`
+- version: `0.8`
 - baseline_date: `2026-09-06`
 - operating_model: [`../OPERATING_MODEL.md`](../OPERATING_MODEL.md)
 - mandatory_review_policy: [`../REVIEW_POLICY.md`](../REVIEW_POLICY.md) `approved v1.4.1`
-- deliverable_model: [`../lifecycle/03-deliverables-and-handover.md`](../lifecycle/03-deliverables-and-handover.md) `v0.2`
+- deliverable_model: [`../lifecycle/03-deliverables-and-handover.md`](../lifecycle/03-deliverables-and-handover.md) `v0.3`
 
 변경이 단순히 `작성됨`을 넘어 현재 risk tier에서 완료 가능한 상태인지 판단한다. 문서/검증 깊이는 risk-based지만 substantive change의 independent review는 생략하지 않는다.
 
@@ -35,10 +35,13 @@
 - [ ] personal / AGY-authorized substantive change이면 AGY/Gemini final independent review가 있다.
 - [ ] MEDIUM/HIGH design이면 구현 전 independent design review가 있다.
 - [ ] raw AI severity를 그대로 release gate로 사용하지 않고 severity calibration을 수행했다.
-- [ ] **active calibrated BLOCKER가 0이다.** 문서에 known issue로 기록했다는 이유로 예외를 만들지 않는다.
-- [ ] calibrated MAJOR는 해결되었거나 policy-compliant authorized risk acceptance가 있다.
+- [ ] **normal Done/release candidate에는 active calibrated BLOCKER가 0이다.** 문서에 known issue로 기록했다는 이유로 예외를 만들지 않는다.
+- [ ] calibrated MAJOR는 해결되었거나 `REVIEW_POLICY.md`가 허용하는 권한자가 policy-compliant risk acceptance를 승인했다.
+- [ ] personal project의 MAJOR risk acceptance는 owner decision record가 있고, company/client risk acceptance는 company/project가 지정한 authorized role/process evidence가 있다.
 - [ ] reviewer provenance와 arbitration/reconciliation evidence를 다시 찾을 수 있다.
 - [ ] company/client에서는 external/personal AGY default-deny와 approved reviewer boundary를 지켰다.
+
+긴급 incident containment는 normal Done 예외가 아니다. 사전/최종 review를 미룰 필요가 있으면 `REVIEW_POLICY.md`의 `REVIEW_DEFERRED_BREAK_GLASS` 절차를 사용하고, review debt가 닫히기 전에는 정상 Done으로 재분류하지 않는다.
 
 ## Validation
 해당되는 경우:
@@ -52,7 +55,7 @@
 - [ ] 각 DLV class가 `APPLICABLE`, `MERGED`, `N/A BY ARCHITECTURE` 중 적절한 상태/근거를 가진다.
 - [ ] UI/interaction이 applicable이면 DLV-02가 실제 UI와 일치한다.
 - [ ] architecture/API/data-flow/security-boundary가 applicable이면 DLV-03가 일치한다.
-- [ ] persistent DB/data contract가 applicable이면 DLV-04가 일치한다.
+- [ ] persistent/transferred data가 applicable이면 DLV-04가 실제 contract와 일치하고 release-impacting data classification `UNKNOWN`이 해결되었거나 해당 requirement/change가 `BLOCKED`/`DESCOPED_APPROVED` 처리됐다.
 - [ ] DLV-05 source/config/migration/test code와 문서 계약이 충돌하지 않는다.
 - [ ] 설치/build/deploy가 applicable하고 달라졌다면 DLV-06을 갱신했다.
 - [ ] 운영/검수/인수가 applicable하고 달라졌다면 DLV-07을 갱신했다.
@@ -64,7 +67,8 @@
 - [ ] HIGH-risk 변경은 rollback/forward-fix/recovery 전략이 있다.
 - [ ] health/log/metric/trace/alert 영향 중 필요한 항목이 반영됐다.
 - [ ] overdue break-glass review debt가 다음 non-emergency release를 부당하게 통과하지 않는다.
-- [ ] release artifact/build/test evidence가 commit/tag/build ID에 필요한 수준으로 anchor되어 있다.
+- [ ] LOW/MEDIUM 개인 작업은 필요한 수준으로 commit/tag/build ID에 evidence를 anchor했다.
+- [ ] **HIGH-risk 또는 production release는 immutable commit SHA, tag 또는 build/artifact ID에 release/build/test/review evidence가 anchor되어 있다.**
 - [ ] 배포하지 않았다면 `배포 완료`라고 표현하지 않는다.
 
 ## Handover
@@ -88,7 +92,9 @@ severity calibration: complete
 arbitration/reconciliation: complete
 calibrated blocker: 0
 calibrated major: 0 | RISK_ACCEPTED
+risk acceptance authority: owner | <company-authorized role> | NOT_APPLICABLE
 requirements terminal-status check: PASS
+data classification release check: PASS | N/A
 deliverables: DLV-01=APPLICABLE, DLV-02=N/A BY ARCHITECTURE, ...
 release artifact ref: <commit/tag/build-id>
 human/project approval: PASS | NOT_REQUIRED | PENDING
