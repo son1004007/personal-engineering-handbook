@@ -89,6 +89,36 @@ password, token, API key, private key, session/OAuth credential 등 **secret/cre
 
 추상화, generic framework, meta-programming, reflection 등의 사용은 실제 복잡도 감소가 명확한 경우에 한한다.
 
+## IMP-013 — 의미 있는 소스 파일은 구현 전에 파일 설계 계약을 둔다 — MUST for substantive source files
+
+업무 로직, API boundary, 인증/인가, 상태 변경, persistence, 외부 I/O, AI/Agent/RAG, security policy 또는 복잡한 orchestration을 포함하는 새 소스 파일은 **구현을 작성하기 전에 파일 상단의 언어 표준 주석/docstring에 파일 설계 계약을 먼저 작성한다.**
+
+최소한 해당되는 내용을 짧고 판정 가능하게 기록한다.
+
+```text
+Purpose / Responsibility
+Inputs / Outputs
+Trust boundary / Authorization
+State changes / Side effects
+Failure / Timeout / Retry behavior
+Key invariants
+Related requirements / tests / design docs
+```
+
+규칙:
+
+- header는 구현 계획의 장식이 아니라 해당 파일이 지켜야 할 local contract다.
+- 구현은 header와 상위 requirement/architecture를 따라야 한다.
+- header와 구현이 충돌하면 구현을 자동으로 정답으로 간주하지 않는다. requirement, test, architecture evidence를 확인해 의도를 결정한다.
+- 파일 책임이나 위 계약이 바뀌면 header와 관련 test/document를 **같은 변경에서** 갱신한다.
+- 검증되지 않은 성능, 보안, 운영 보장을 header에 완료 사실처럼 쓰지 않는다.
+- customer/internal identifier, secret, credential, private URL/data를 header에 넣지 않는다.
+- 단순 DTO/value type, generated file, migration generated artifact, trivial re-export/index, framework boilerplate처럼 별도 파일 계약이 실질적 가치를 주지 않는 파일은 생략할 수 있다.
+- 긴 설계 문서를 source header에 복제하지 않는다. 상세 설계는 ADR/architecture 문서에 두고 header에는 파일 수준 책임과 불변조건, 관련 문서 reference만 둔다.
+- language-native form을 사용한다. 예: Python module docstring, TypeScript block/JSDoc comment, Java type-level Javadoc.
+
+AI coding agent는 header가 필요한 파일에서 **header를 먼저 작성/수정한 뒤 구현**해야 한다. 기존 substantive file에 header가 없을 때 의미 있는 변경을 한다면 해당 변경 범위의 계약을 먼저 추가한다.
+
 ## 완료 전 최소 확인
 
 - [ ] 요구사항과 구현이 연결된다.
@@ -99,6 +129,7 @@ password, token, API key, private key, session/OAuth credential 등 **secret/cre
 - [ ] 외부 I/O timeout/retry/side effect를 검토했다.
 - [ ] secret/credential/민감정보 노출이 없다.
 - [ ] 테스트 가능한 구조다.
+- [ ] substantive source file의 상단 설계 계약이 구현/테스트/상위 설계와 일치한다.
 
 ## 근거
 
