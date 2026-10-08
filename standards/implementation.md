@@ -91,7 +91,7 @@ password, token, API key, private key, session/OAuth credential 등 **secret/cre
 
 ## IMP-013 — 의미 있는 소스 파일은 구현 전에 파일 설계 계약을 둔다 — MUST for substantive source files
 
-업무 로직, API boundary, 인증/인가, 상태 변경, persistence, 외부 I/O, AI/Agent/RAG, security policy 또는 복잡한 orchestration을 포함하는 새 소스 파일은 **구현을 작성하기 전에 파일 상단의 언어 표준 주석/docstring에 파일 설계 계약을 먼저 작성한다.**
+업무 로직, API boundary, 인증/인가, 상태 변경, persistence, 외부 I/O, AI/Agent/RAG, security policy 또는 복잡한 orchestration을 포함하는 새 소스 파일은 **구현을 작성하기 전에 파일 상단의 언어 표준 주석/docstring에 파일 설계 계약을 먼저 작성한다. 개인 프로젝트의 설계 설명 문장은 한글을 기본으로 하며, 코드 식별자/프로토콜/라이브러리명/상태값은 필요한 경우 영문을 유지한다.**
 
 최소한 해당되는 내용을 짧고 판정 가능하게 기록한다.
 
