@@ -7,6 +7,8 @@
 
 ## Current drafts
 
+- [`ui-publishing-first.md`](ui-publishing-first.md) — UI 중심 프로젝트에서 설계 후 실행 가능한 화면을 먼저 제시하여 사용자 검증을 수행하는 기준 (제안 초안)
+
 - [`quality-model.md`](quality-model.md) — 품질 특성을 요구/검증에 연결하는 기준
 - [`implementation.md`](implementation.md) — 언어 중립 구현 원칙
 - [`testing.md`](testing.md) — 위험·요구 기반 테스트/verification

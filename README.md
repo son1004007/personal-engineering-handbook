@@ -63,6 +63,7 @@ Reusable skeletons: [`templates/`](templates/)
 - [`lifecycle/03-deliverables-and-handover.md`](lifecycle/03-deliverables-and-handover.md)
 
 ### Standards
+- [`standards/ui-publishing-first.md`](standards/ui-publishing-first.md) — UI 프로젝트의 설계 → 퍼블리싱 → 사용자 검증 → 백엔드 작업 순서 (독립 검수 전 초안)
 - [`standards/quality-model.md`](standards/quality-model.md)
 - [`standards/implementation.md`](standards/implementation.md)
 - [`standards/testing.md`](standards/testing.md)

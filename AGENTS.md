@@ -51,7 +51,7 @@ Do not report substantive work as Done merely because tests passed when mandator
 Default project deliverable classes:
 
 1. DLV-01 requirements and traceability
-2. DLV-02 UI publishing and screen guide
+2. DLV-02 UI publishing and screen guide (UI가 있는 프로젝트의 퍼블리싱 우선 설계 검증은 `standards/ui-publishing-first.md` 제안 지침 참조)
 3. DLV-03 system/software design
 4. DLV-04 database/data specification
 5. DLV-05 source/config/migration/test code

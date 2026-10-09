@@ -71,7 +71,7 @@ Completion condition:
 
 ### DLV-02 — UI Publishing Build and Screen Guide
 
-**Purpose:** 요구사항을 반영한 실행 가능한 UI와 화면별 동작 계약을 제공한다.
+**Purpose:** 요구사항을 반영한 실행 가능한 UI와 화면별 동작 계약을 제공한다. 화면 조작·정보 배치를 사용자에게 검증받는 것이 핵심이라면 **설계 이후 백엔드 상세 구현에 앞서 퍼블리싱을 먼저 제공**한다([제안된 재사용 기준](../standards/ui-publishing-first.md)).
 
 Minimum content when applicable:
 - target user / scenario
