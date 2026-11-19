@@ -1,22 +1,24 @@
-# Mandatory Independent Review Policy
+# Risk-based Optional Independent AI Review Policy
 
 - status: `approved`
-- version: `1.4.1`
-- approved_date: `2026-09-06`
+- version: `1.5`
+- approved_date: `2026-11-20`
 - last_reviewed: `2026-09-06`
-- owner_decision: `Independent review is mandatory; AGY/Gemini is mandatory for personal or explicitly authorized environments; raw AI findings and severity are provisional.`
-- review_evidence:
+- owner_decision: `Independent AI review is optional; objective verification and actual organizational obligations remain mandatory. AGY/Gemini must not be automatically delegated.`
+- review_evidence (historical v1.4.1; not review of v1.5):
   - `device-control #353 / run 33996776013`
   - `device-control #354 / run 33997032701`
   - `device-control #355 / run 33997311911`
   - `device-control #356 / run 33997410654`
   - `device-control #357 / run 33997542247 — READY, BLOCKER 0`
 
+**2026-11-20 superseding rule:** Independent AI quality review is optional across owner-governed engineering workflows. No missing optional AI review alone shall cause REVIEW_DEBT, approval requests or release hold. Use `NOT_RUN_OPTIONAL`; never report it as PASS. Legacy mandatory-review language elsewhere is superseded for optional AI review only. Existing legal, contractual, employer/client governance, human approvals, security boundaries and actual BLOCKER/MAJOR handling remain intact. Implementation AI may self-review and perform real verification. This update is owner-approved, not independently reviewed.
+
 ## 1. Core policy
 
-1. Substantive engineering change -> independent review MUST.
-2. Personal / explicitly AGY-authorized environment -> AGY/Gemini final review MUST.
-3. MEDIUM/HIGH design -> independent pre-design review MUST.
+1. Substantive engineering change -> self-review and risk-based functional/security/regression verification MUST; independent AI review MAY.
+2. Personal / explicitly authorized environment -> use optional independent review only when useful and authorized. AGY/Gemini automatic delegation remains disabled until explicit reapproval.
+3. MEDIUM/HIGH design -> risk-based design/security analysis MUST; separate AI pre-design/final review MAY. Actual law/contract/company/client/project-required human or independent review remains mandatory where applicable.
 4. Raw AI finding/severity is provisional, not authority.
 5. Findings are calibrated against objective severity criteria and evidence.
 6. A **true calibrated BLOCKER cannot be waived in normal release**.
@@ -40,13 +42,13 @@ law / contract / client requirement
 
 Review is performed on a **logical change set / PR / release candidate**, not every edit or commit.
 
-TDD micro-iterations and work-in-progress commits do not each trigger AGY. Final substantive logical change still requires review before declared Done/merge/release.
+TDD micro-iterations and work-in-progress commits do not each trigger AGY. Final substantive logical change requires verification and self-review; independent AI review is optional unless an actual external governance requirement applies.
 
 ## 4. Applicability
 
 ### SUBSTANTIVE
 
-Independent final review required when a logical change changes any of:
+Risk-proportional verification required, and optional independent AI review may be useful, when a logical change changes any of:
 
 - runtime / externally observable behavior
 - business or acceptance semantics
@@ -63,7 +65,7 @@ Independent final review required when a logical change changes any of:
 
 ### NON_SUBSTANTIVE
 
-May be `NOT_APPLICABLE` only when all remain unchanged:
+For non-substantive work `NOT_APPLICABLE` may be used when all remain unchanged:
 
 - runtime/build/release/security/data behavior
 - external contract
@@ -77,12 +79,7 @@ Gray area defaults substantive.
 
 ## 5. Design review
 
-MEDIUM/HIGH architecture/security/data/operation decisions require pre-implementation independent design review.
-
-- personal / AGY-authorized -> AGY/Gemini
-- company/client -> company-approved reviewer unless AGY explicitly authorized
-
-LOW substantive change may skip separate pre-design review but still requires final review.
+MEDIUM/HIGH architecture/security/data/operation decisions require risk-based design/security analysis. Separate AI review is optional; use only authorized reviewers/data. Company/client actual review obligations remain in force. LOW substantive change still requires relevant functional and security verification.
 
 ## 6. Independent review input and provenance
 
@@ -194,12 +191,12 @@ Implementer cannot unilaterally dismiss a disputed credible risk.
 Use:
 
 1. available evidence
-2. eligible second independent semantic reviewer
+2. optional eligible second independent semantic reviewer or owner-authorized evidence-based risk reconciliation
 3. rubric-based owner disposition
 
 Outcomes:
 
-- second reviewer concurs concern invalid/non-credible -> `REJECTED` allowed with concurrence + evidence
+- decisive evidence establishes concern invalid/non-credible -> `REJECTED` with recorded rationale; optional reviewer concurrence if available
 - both agree risk exists -> calibrate severity
   - BLOCKER -> FIX/HOLD; no normal waiver
   - MAJOR -> FIX or `RISK_ACCEPTED`
@@ -226,7 +223,7 @@ After the planned evidence is exhausted:
 
 - if credible BLOCKER rubric path remains -> HOLD/FIX; do not down-calibrate merely because investigation took too long
 - if BLOCKER rubric is not established but material residual risk remains -> calibrate MAJOR and FIX or `RISK_ACCEPTED`
-- if evidence + second reviewer supports no material risk -> REJECTED/MINOR as justified
+- if evidence supports no material risk -> REJECTED/MINOR as justified, with optional reviewer concurrence where obtained
 
 No universal fixed number of review cycles is mandated; the bound must be explicit and risk-proportional.
 
@@ -299,7 +296,9 @@ Do not impose personal AGY sign-off on a team unless formally adopted.
 
 ### Personal non-emergency
 
-If AGY and eligible substitute are temporarily unavailable, work may continue on a **non-release branch/worktree**:
+If an optional reviewer is unavailable, record `NOT_RUN_OPTIONAL`; no review debt/release block solely for missing independent AI review. Within existing approvals, proceed with implementation, self-review, verification and deployment. The following historical debt procedure applies only to an actual mandatory review obligation:
+
+Work may continue on a **non-release branch/worktree**:
 
 - implement
 - test
@@ -311,16 +310,16 @@ Record:
 ```text
 REVIEW_DEBT
 review_required: yes
-reason: AGY_RUNTIME_UNAVAILABLE
+reason: ACTUAL_REQUIRED_REVIEW_UNAVAILABLE
 review_target: <exact commit/range>
 review_due: before release/main integration
 ```
 
-Until independent review completes, do not declare Done, merge/update declared release/main baseline, publish release or deploy production.
+When actual required review remains outstanding, follow that governance's release restrictions. Missing optional AI review alone never prevents release.
 
 ### Company/client
 
-Personal AGY outage must not be organization SPOF. Use company-approved mandatory review path.
+Personal AGY outage must not be organization SPOF. Follow the company's actual approved review path, if required.
 
 ## 16. Risk acceptance
 
@@ -361,7 +360,7 @@ No open-ended defer.
 
 ### Expired review-debt gate — MUST
 
-A subsequent **non-emergency release in the same affected area** must not be approved while a prior break-glass `review_due` is overdue and its review/triage is still open.
+A subsequent non-emergency release in the same affected area must not be approved while an actual mandatory review obligation or credible unresolved BLOCKER from break-glass remains overdue. Missing optional AI review alone does not block release.
 
 Organization policy may define a broader gate.
 
@@ -391,13 +390,13 @@ Higher evidence matters only when it addresses the finding scope.
 Done requires, as applicable:
 
 - deterministic verification
-- required independent design/final review
+- self-review, and independent design/final review only if actually required; optional AI review status recorded
 - severity triage/calibration
 - arbitration/reconciliation
 - no unresolved calibrated BLOCKER
 - calibrated MAJOR fixed or properly risk-accepted
-- no overdue same-area break-glass review debt blocking this non-emergency release
-- reviewer provenance evidence appropriate to policy
+- no actual mandatory overdue same-area break-glass review obligation or unresolved calibrated BLOCKER
+- reviewer provenance evidence if independent review performed
 - reviewer/data-boundary/project-governance compliance
 
 Test PASS alone is not Done.
@@ -410,3 +409,5 @@ Test PASS alone is not Done.
 - #355 -> v1.3: raw severity calibration, tie-break, review-unit/TDD overhead, substitute capability, solo incident handling.
 - #356 -> v1.4: calibrated BLOCKER non-waivable; interpretive false-positive rejection path; triage authority; non-emergency review debt.
 - #357 -> READY, BLOCKER 0. Post-READY majors selectively applied in v1.4.1: bounded evidence plan without arbitrary fixed cycle count, overdue break-glass debt gate, and policy-safe reviewer-input provenance rather than mandatory raw confidential-payload duplication.
+
+- v1.5 (2026-11-20): owner makes independent AI review optional, retains evidence-based quality/security and actual governance requirements; independent AI review NOT_RUN_OPTIONAL.
