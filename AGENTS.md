@@ -8,6 +8,9 @@ Before substantive cross-repository or development work, read:
 
 Then return to this repository.
 
+
+> 2026-11-20 owner policy: Independent AI review is optional. See REVIEW_POLICY.md v1.5. Actual governance, security, verification and approval rules remain unchanged.
+
 ## Purpose
 
 This repository is the public Source of Truth for the owner's personal software-engineering practices, lifecycle rules, deliverables, checklists, and reusable templates. It may be used as the owner's working method inside company/client projects only within higher policy and approved data boundaries.
@@ -25,26 +28,26 @@ latest explicit user instruction
 > AI preference
 ```
 
-## Mandatory review bootstrap
+## Quality and review bootstrap
 
 Before substantive engineering work read:
 
-1. `REVIEW_POLICY.md` — **approved v1.4.1**
+1. `REVIEW_POLICY.md` — **approved v1.5**
 2. `OPERATING_MODEL.md`
 3. relevant lifecycle/standard/checklist docs
 4. for deliverables/handover, `lifecycle/03-deliverables-and-handover.md`
 
 Core rules:
 
-- personal / explicitly AGY-authorized: substantive final change requires AGY/Gemini independent review; MEDIUM/HIGH design requires pre-design review.
-- company/client: independent review mandatory; external/personal AGY DEFAULT DENY until explicit authorization.
+- personal: self-review and risk-based verification required; independent AI design/final review optional.
+- company/client: actual governance review remains mandatory when required; external/personal AI DEFAULT DENY until explicit authorization.
 - raw AI finding/severity is provisional; calibrate against evidence and the v1.4.1 severity rubric.
 - calibrated BLOCKER cannot be waived for normal release; calibrated MAJOR may use authorized risk acceptance.
 - directly falsifiable finding may be rejected/down-calibrated only with decisive scope-matching evidence.
-- disputed interpretive/risk/design finding follows independent arbitration; implementer-alone dismissal is invalid.
+- disputed credible interpretive/risk/design findings require evidence-based reconciliation; independent AI arbitration optional, unsupported dismissal invalid.
 - break-glass may defer design/final review only with tracked review debt and post-release reconciliation.
 
-Do not report substantive work as Done merely because tests passed when mandatory review/arbitration evidence is missing.
+Do not claim Done without required verification, unresolved-blocker disposition and actual governance evidence. Optional AI review alone does not block Done.
 
 ## Deliverable model
 
@@ -75,7 +78,7 @@ identify recurring problem/decision
 -> gather authoritative references
 -> draft rationale/scope/exceptions
 -> synthetic example when useful
--> independent review
+-> self-review / optional independent AI review
 -> arbitrate/reconcile findings
 -> verify with test/runtime when applicable
 -> owner approval
@@ -101,7 +104,7 @@ law / contract / company / project policy
 1. Read target repo AGENTS/requirements/architecture/tests/current state/data boundary first.
 2. Read `REVIEW_POLICY.md` and relevant approved defaults.
 3. Apply the DLV-01~07 model with risk-proportional tailoring.
-4. Use risk-proportional documentation but mandatory independent review.
+4. Use risk-proportional documentation, mandatory verification, and optional independent AI review.
 5. Map company work into existing ticket/PR/CI/security/change-management; do not create shadow governance.
 6. Do not use personal AGY with company data unless explicitly authorized.
-7. Generalize reusable rules here only after sanitization, independent review and owner approval.
+7. Generalize reusable rules here only after sanitization, verification and owner approval; independent AI review optional.
