@@ -4,9 +4,9 @@
 - version: `0.6`
 - baseline_date: `2026-09-06`
 - review_inputs: `AGY/Gemini issues #350, #352, #353, #354`
-- mandatory_review_policy: [`REVIEW_POLICY.md`](REVIEW_POLICY.md) `approved v1.2`
+- review_policy: [`REVIEW_POLICY.md`](REVIEW_POLICY.md) `approved v1.5`
 
-이 문서는 handbook 규칙을 실제 작업에 적용할 때 필요한 공통 해석 기준을 정의한다. **문서와 검증 깊이는 위험에 비례하지만 substantive engineering change의 independent review는 `REVIEW_POLICY.md`에 따라 필수**다.
+이 문서는 handbook 규칙을 실제 작업에 적용할 때 필요한 공통 해석 기준을 정의한다. **문서와 필수 검증 깊이는 위험에 비례하며 별도 독립 AI 품질 검토는 `REVIEW_POLICY.md` v1.5에 따라 선택 사항**이다. 실제 회사/계약/프로젝트상 필수 검토는 유지한다.
 
 Review applicability, AGY authorization, finding arbitration, substitute reviewer, break-glass review deferral의 상세 규칙은 `REVIEW_POLICY.md`를 단일 Source of Truth로 사용한다. 이 문서에서 중복 정의하지 않는다.
 
@@ -23,20 +23,20 @@ Review applicability, AGY authorization, finding arbitration, substitute reviewe
 ### Solo / AI-pair
 
 - owner가 최종 책임을 진다.
-- substantive change는 AGY/Gemini final review MUST.
-- MEDIUM/HIGH design은 AGY/Gemini pre-design review MUST.
+- substantive change는 자체 검토 및 기능·보안 검증 MUST; 독립 AI final review MAY.
+- MEDIUM/HIGH design은 위험 기반 분석 MUST; 독립 AI pre-design review MAY.
 - AI finding은 자동 정답이 아니며 v1.2 evidence/arbitration rule을 따른다.
 
 ### Team / organization
 
 - 회사/고객/project policy가 handbook보다 우선한다.
-- independent review는 mandatory지만 외부/개인 AGY는 DEFAULT DENY다.
-- 명시적 authorization이 없으면 company-approved human/internal-AI reviewer를 사용한다.
+- 실제 회사/계약상 요구된 검토는 mandatory; 개인 독립 AI review는 선택이며 외부/개인 AGY는 DEFAULT DENY다.
+- 실제 검토 의무가 있으면 company-approved human/internal-AI reviewer를 사용한다.
 - handbook을 별도 shadow governance로 만들지 않고 기존 ticket/PR/CI/security/change-management에 mapping한다.
 
 ## 3. Risk tiers
 
-위험등급은 **review 존재 여부가 아니라 문서·review·verification 깊이**를 결정한다.
+위험등급은 **문서·자체 검토·verification 깊이와 선택적 AI review 필요성**을 결정한다.
 
 ### LOW
 
@@ -45,7 +45,7 @@ routine/reversible/localized change.
 기본:
 - purpose/scope
 - 필요한 verification
-- substantive라면 final independent review
+- substantive라면 자체 검토, 독립 AI review 선택
 
 ### MEDIUM
 
@@ -65,8 +65,7 @@ meaningful behavior change이나 blast radius가 제한적이고 복구 가능.
 - decision
 - verification evidence
 - 필요한 rollback note
-- pre-design independent review
-- final independent review
+- 위험 기반 자체 설계/최종 검토, 독립 AI review 선택
 
 ### HIGH
 
@@ -87,8 +86,7 @@ architectural/security/irreversible/wide-blast-radius change.
 - architecture/security/data decision
 - threat/risk analysis
 - migration/recovery strategy
-- pre-design/security independent review
-- final independent review
+- 위험 기반 설계·보안·최종 자체 검토, 독립 AI review 선택
 - project-required human/SoD approval
 - acceptance/release evidence
 
@@ -163,7 +161,7 @@ TRIAGE
 - AI가 제안했다는 이유로 모든 finding 구현
 - 회사에 개인 workflow/AGY sign-off를 별도 조직 gate로 강제
 
-**독립 review는 mandatory지만 산출물과 수정은 위험·증거에 비례한다.**
+**필수 검증과 실제 governance 의무는 유지하며 독립 AI review는 선택 사항이다.**
 
 ## Review record
 
@@ -171,3 +169,5 @@ TRIAGE
 - 2026-09-06: #352 prior baseline `READY_FOR_REVIEWED`.
 - 2026-09-06: owner가 mandatory independent-review 의도를 명시적으로 승인.
 - 2026-09-06: #353/#354 governance review를 선별 반영하여 `REVIEW_POLICY.md v1.2`로 통합. 상세 arbitration은 해당 policy에서만 유지.
+
+- 2026-11-20: owner changes independent AI quality review to optional; REVIEW_POLICY.md v1.5 supersedes historical mandatory rules.
